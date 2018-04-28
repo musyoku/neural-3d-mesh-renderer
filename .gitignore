@@ -1,0 +1,15 @@
+# ignore all
+*
+
+# allow any
+!*/
+!*.js
+!*.json
+!*.py
+!*.md
+!.gitignore
+
+# ignore
+ui/node_modules
+ui/.next
+ui/package-lock.json
