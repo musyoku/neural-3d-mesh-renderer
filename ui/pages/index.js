@@ -22,7 +22,27 @@ export default class App extends Component {
         // const directional_light = new three.HemisphereLight(0xaaaaaa, 0x444444)
         // scene.add(directional_light)
 
-        const geometry = new three.BoxGeometry(1, 1, 1)
+        const geometry = new three.Geometry()
+
+        geometry.vertices.push(new three.Vector3(0, 0, 1))
+        geometry.vertices.push(new three.Vector3(1, 0, 0))
+        geometry.vertices.push(new three.Vector3(0, -1, 0))
+        geometry.vertices.push(new three.Vector3(-1, 0, 0))
+        geometry.vertices.push(new three.Vector3(0, 1, 0))
+        geometry.vertices.push(new three.Vector3(0, 0, -1))
+
+        geometry.faces.push(new three.Face3(0, 2, 1))
+        geometry.faces.push(new three.Face3(0, 3, 2))
+        geometry.faces.push(new three.Face3(0, 4, 3))
+        geometry.faces.push(new three.Face3(0, 1, 4))
+        geometry.faces.push(new three.Face3(5, 1, 2))
+        geometry.faces.push(new three.Face3(5, 2, 3))
+        geometry.faces.push(new three.Face3(5, 3, 4))
+        geometry.faces.push(new three.Face3(5, 4, 1))
+
+        geometry.computeFaceNormals();
+
+        // const geometry = new three.BoxGeometry(1, 1, 1)
         const material = new three.MeshStandardMaterial({
             "color": new three.Color().setHSL(1, 1, 0.75),
             "roughness": 0.5,
@@ -32,12 +52,16 @@ export default class App extends Component {
         const cube = new three.Mesh(geometry, material)
         scene.add(cube)
 
-        // scene.add(new three.HemisphereLight(0xaaaaaa, 0x444444))
-        const light = new three.DirectionalLight(0xFFFFFF, 1.0)
-        light.position.copy(camera.position)
-        scene.add(light)
+        const lights = [
+            new three.HemisphereLight(0x999999, 0x000000),
+            new three.DirectionalLight(0xFFFFFF, 0.5)
+        ]
+        for(const light of lights){
+            light.position.copy(camera.position)
+            scene.add(light)
+        }
 
-        camera.position.z = 5
+        scene.add(new three.AxesHelper(20))
 
         const controls = new OrbitControls(camera)
         controls.minDistance = 2
@@ -47,7 +71,13 @@ export default class App extends Component {
 
         const animate = () => {
             controls.update()
-            light.position.copy(camera.position)
+            // カメラの位置によらずライトが常に画面上部にくるようにする
+            const pseudo_x = Math.sqrt(camera.position.z * camera.position.z + camera.position.x * camera.position.x)
+            const light_rad = Math.atan2(camera.position.y, pseudo_x) + 60.0 / 180.0
+            const light_position = new three.Vector3(camera.position.x, Math.sin(light_rad) * 5.0, camera.position.z)
+            for (const light of lights) {
+                light.position.copy(light_position)
+            }
             renderer.render(scene, camera)
             requestAnimationFrame(animate)
         }
