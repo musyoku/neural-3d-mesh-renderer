@@ -18,17 +18,15 @@ class Client:
                                               faces.size), vertices.shape[0],
                            *vertices.flatten("C"), faces.shape[0],
                            *faces.flatten("C"))
-        print(faces.shape)
         requests.post(
             url="{}/init_object".format(self.base_url),
             data=data,
             headers={'Content-Type': 'application/octet-stream'})
 
-    def update_object(self, vertices, faces):
+    def update_object(self, vertices):
         # 先頭に頂点数を入れ、続けて座標を入れる
         data = struct.pack("<i{}f".format(vertices.size), vertices.shape[0],
                            *vertices.flatten("C"))
-        print(vertices.shape)
         requests.post(
             url="{}/update_object".format(self.base_url),
             data=data,
