@@ -13,24 +13,15 @@ export default class App extends Component {
         renderer.setSize(window.innerWidth, window.innerHeight)
         this.refs.renderer.appendChild(renderer.domElement)
 
-        // const ambient_light = new three.AmbientLight(0xFFFFFF, 0.1)
-        // scene.add(ambient_light)
-
-        // const directional_light = new three.DirectionalLight(0xFFFFFF, 1.0)
-        // scene.add(directional_light)
-
-        // const directional_light = new three.HemisphereLight(0xaaaaaa, 0x444444)
-        // scene.add(directional_light)
-
         const geometry = new three.Geometry()
-
+        // 頂点を追加
         geometry.vertices.push(new three.Vector3(0, 0, 1))
         geometry.vertices.push(new three.Vector3(1, 0, 0))
         geometry.vertices.push(new three.Vector3(0, -1, 0))
         geometry.vertices.push(new three.Vector3(-1, 0, 0))
         geometry.vertices.push(new three.Vector3(0, 1, 0))
         geometry.vertices.push(new three.Vector3(0, 0, -1))
-
+        // 面を追加
         geometry.faces.push(new three.Face3(0, 2, 1))
         geometry.faces.push(new three.Face3(0, 3, 2))
         geometry.faces.push(new three.Face3(0, 4, 3))
@@ -40,17 +31,20 @@ export default class App extends Component {
         geometry.faces.push(new three.Face3(5, 3, 4))
         geometry.faces.push(new three.Face3(5, 4, 1))
 
-        geometry.computeFaceNormals();
+        geometry.computeFaceNormals()
 
-        // const geometry = new three.BoxGeometry(1, 1, 1)
+        const wire = new three.MeshBasicMaterial({ "color": 0xffffff, "wireframe": true })
+        const wire_mesh = new three.Mesh(geometry, wire)
+        scene.add(wire_mesh)
+
         const material = new three.MeshStandardMaterial({
             "color": new three.Color().setHSL(1, 1, 0.75),
             "roughness": 0.5,
             "metalness": 0,
-            "flatShading": true
+            "flatShading": true,
         })
-        const cube = new three.Mesh(geometry, material)
-        scene.add(cube)
+        const mesh = new three.Mesh(geometry, material)
+        scene.add(mesh)
 
         const lights = [
             new three.HemisphereLight(0x999999, 0x000000),

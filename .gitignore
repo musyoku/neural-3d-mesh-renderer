@@ -10,6 +10,6 @@
 !.gitignore
 
 # ignore
-ui/node_modules
-ui/.next
-ui/package-lock.json
+js/node_modules
+js/.next
+js/package-lock.json
