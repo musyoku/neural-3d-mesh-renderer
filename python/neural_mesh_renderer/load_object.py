@@ -7,7 +7,7 @@ def load_vertices(filepath):
     with open(filepath) as file:
         for line in file:
             vertices.append([float(v) for v in line.split()])
-    return np.vstack(vertices).astype(np.float32)
+    return np.vstack(vertices).astype("float32")
 
 
 def load_faces(filepath):
@@ -15,7 +15,7 @@ def load_faces(filepath):
     with open(filepath) as file:
         for line in file:
             faces.append([float(f) for f in line.split()])
-    return np.vstack(faces).astype(np.int32)
+    return np.vstack(faces).astype("int32")
 
 
 def load_object(directory):
