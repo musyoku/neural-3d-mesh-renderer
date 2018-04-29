@@ -15,8 +15,7 @@ def load_faces(filepath):
     with open(filepath) as file:
         for line in file:
             faces.append([float(f) for f in line.split()])
-    # 番号なので1を引いてインデックスに直す
-    return np.vstack(faces).astype(np.int32) - 1
+    return np.vstack(faces).astype(np.int32)
 
 
 def load_object(directory):

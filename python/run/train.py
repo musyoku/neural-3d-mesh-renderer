@@ -5,11 +5,10 @@ import neural_mesh_renderer as nmr
 
 def main():
     vertices, faces = nmr.load_object("../objects/teapot.obj")
-    gui = nmr.gui.Client("localhost", 8081)
-    from time import sleep
-    while True:
-        gui.update_object(vertices, faces)
-        print("ha")
+    for vertex in vertices:
+        print(vertex)
+    gui = nmr.gui.Client("localhost", 8080)
+    gui.update_object(vertices, faces)
 
 if __name__ == "__main__":
     main()
