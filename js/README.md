@@ -8,4 +8,4 @@ node server.js
 
 next.jsは自動的にビルドされるため何もしなくて大丈夫です。
 
-またHot Module Replacementが有効になっているのでコードを変更すると自動ビルドされます。
+またHot Module Replacementが有効になっているので`pages`以下のコードを変更すると自動ビルドされます。

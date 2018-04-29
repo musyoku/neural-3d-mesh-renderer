@@ -8,6 +8,8 @@
 !*.py
 !*.md
 !.gitignore
+!python/objects/teapot.obj/vertices
+!python/objects/teapot.obj/faces
 
 # ignore
 js/node_modules
