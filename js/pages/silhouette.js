@@ -113,7 +113,9 @@ export default class App extends Component {
         this.geometry.computeFaceNormals()
     }
     onInitObject = (buffer) => {
-        let offset = 1
+        let offset = 0
+        const event_code = buffer.readInt8(offset)
+        offset += 1
         const num_vertices = buffer.readInt32LE(offset)
         const vertices = []
         offset += 4
@@ -141,7 +143,9 @@ export default class App extends Component {
         this.initScene(vertices, faces)
     }
     onUpdateObject = (buffer) => {
-        let offset = 1
+        let offset = 0
+        const event_code = buffer.readInt8(offset)
+        offset += 1
         const num_vertices = buffer.readInt32LE(offset)
         const vertices = []
         offset += 4
@@ -157,7 +161,9 @@ export default class App extends Component {
         this.updateVertices(vertices)
     }
     onInitSilhouetteArea = (buffer) => {
-        let offset = 1
+        let offset = 0
+        const event_code = buffer.readInt8(offset)
+        offset += 1
         const width = buffer.readInt32LE(offset)
         offset += 4
         const height = buffer.readInt32LE(offset)
@@ -168,8 +174,10 @@ export default class App extends Component {
             }
         })
     }
-    onUpdateTopSilhouette = (buffer) => {
-        let offset = 1
+    updateSilhouette = (buffer, canvas) => {
+        let offset = 0
+        const event_code = buffer.readInt8(offset)
+        offset += 1
         const num_pixels = buffer.readInt32LE(offset)
         offset += 4
         const height = buffer.readInt32LE(offset)
@@ -178,26 +186,27 @@ export default class App extends Component {
         offset += 4
         const vertices = []
 
-        // データをcanvasのcontextに設定
-        const canvas = new Canvas(width, height)
         const ctx = canvas.getContext("2d")
-
-        // RGBの画素値の配列を取得
-        const data = ctx.getImageData(0, 0, width, height)
-
+        const image = ctx.getImageData(0, 0, width, height)
         for (let p = 0; p < num_pixels; p++) {
             const value = buffer.readUInt8(offset)
             offset += 1
             const x = p % width
             const y = parseInt(Math.floor(p / width))
-            const index = (y * data.width + x) * 4
-            data.data[index + 0] = value    // R
-            data.data[index + 1] = value    // G
-            data.data[index + 2] = value    // B
-            data.data[index + 3] = 1        // A
+            const index = (y * width + x) * 4
+            if (index >= image.data.length) {
+                alert("index >= image.data.length")
+                return
+            }
+            image.data[index + 0] = value    // R
+            image.data[index + 1] = value    // G
+            image.data[index + 2] = value    // B
+            image.data[index + 3] = 255      // A
         }
-
-        ctx.putImageData(data, 0, 0)
+        ctx.putImageData(image, 0, 0)
+    }
+    onUpdateTopSilhouette = (buffer) => {
+        this.updateSilhouette(buffer, this.refs.top_canvas)
     }
     componentDidMount = () => {
         this.ws = new WebSocketClient("localhost", 8081)
@@ -214,7 +223,7 @@ export default class App extends Component {
                 if (event_code === enums.event.update_object) {
                     this.onUpdateObject(buffer)
                 }
-                if (event_code === enums.event.update_top_image) {
+                if (event_code === enums.event.update_top_silhouette) {
                     this.onUpdateTopSilhouette(buffer)
                 }
                 if (event_code === enums.event.init_silhouette_area) {

@@ -23,6 +23,13 @@ def main():
         # nodeのサーバーをあらかじめ起動しておかないと繋がらない
         browser = nmr.browser.Silhouette(8080, vertices, faces, silhouette_size)
 
+        for i in range(1, 180):
+            perspective_vertices = nmr.vertices.project_perspective(vertices, i)
+            silhouette_data = nmr.image.draw_vertices(perspective_vertices, silhouette_size)
+            print(silhouette_data.shape)
+            browser.update_top_silhouette(silhouette_data)
+            browser.update_object(perspective_vertices)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

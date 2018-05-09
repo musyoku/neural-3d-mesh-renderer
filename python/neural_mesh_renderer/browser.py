@@ -23,14 +23,14 @@ class Silhouette:
     def update_top_silhouette(self, image):
         assert (len(image.shape) == 2)
         data = struct.pack(
-            "<3i{}c".format(image.size),
+            "<3i{}B".format(image.size),
             image.size,
             image.shape[0],  # 高さ
             image.shape[1],  # 幅
             *image.flatten("C"),
         )
         requests.post(
-            url="{}/update_top_image".format(self.base_url),
+            url="{}/update_top_silhouette".format(self.base_url),
             data=data,
             headers={'Content-Type': 'application/octet-stream'})
 
