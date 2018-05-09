@@ -2,7 +2,7 @@ import requests
 import struct
 
 
-class Client:
+class Silhouette:
     def __init__(self, domain, port):
         self.base_url = "http://{}:{}".format(domain, port)
         print(self.base_url)

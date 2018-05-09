@@ -1,15 +1,14 @@
 import os, sys
 sys.path.append(os.path.join(".."))
 import neural_mesh_renderer as nmr
-
 import math
 import numpy as np
 import sys
 
 
 def main():
-    vertices, faces = nmr.load_object("../objects/teapot.obj")
-    browser = nmr.browser.Client("localhost", 8080)
+    vertices, faces = nmr.objects.load("../objects/teapot.obj")
+    browser = nmr.browser.Silhouette("localhost", 8080)
     browser.init_object(vertices, faces)
 
     import time

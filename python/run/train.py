@@ -5,10 +5,14 @@ import neural_mesh_renderer as nmr
 
 def main():
     # オブジェクトの読み込み
-    vertices, faces = nmr.objects.load("../objects/teapot.obj")
+    vertices, faces = nmr.objects.load("../objects/cube.obj")
 
     # カメラ座標系に変換
-    vertices = nmr.transform.to_camera_coordinate_system(vertices, 5, 0, 0)
+    vertices = nmr.vertices.transform_to_camera_coordinate_system(
+        vertices, 5, 0, 0)
+    print(vertices)
+
+    vertices = nmr.vertices.project_perspective(vertices, 90, 90)
     print(vertices)
 
     if args.use_browser:
