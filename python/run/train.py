@@ -5,17 +5,21 @@ import neural_mesh_renderer as nmr
 
 def main():
     # オブジェクトの読み込み
-    vertices, faces = nmr.load_object("../objects/teapot.obj")
+    vertices, faces = nmr.objects.load("../objects/teapot.obj")
+
+    # カメラ座標系に変換
+    vertices = nmr.transform.to_camera_coordinate_system(vertices, 5, 0, 0)
+    print(vertices)
 
     if args.use_browser:
         # ブラウザのビューワを起動
         # nodeのサーバーをあらかじめ起動しておかないと繋がらない
-        brwoser = nmr.brwoser.Client("localhost", 8080)
-        brwoser.init_object(vertices, faces)
+        browser = nmr.browser.Silhouette("localhost", 8080)
+        browser.init_object(vertices, faces)
 
 
 if __name__ == "__main__":
-	parser = argparse.ArgumentParser()
-	parser.add_argument("--use-browser", "-browser", action="store_true")
-	args = parser.parse_args()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--use-browser", "-browser", action="store_true")
+    args = parser.parse_args()
     main()
