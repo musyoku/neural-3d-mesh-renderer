@@ -4,6 +4,7 @@ import OrbitControls from "three-orbitcontrols"
 import WebSocketClient from "../websocket"
 import enums from "../enums"
 import blob_to_buffer from "blob-to-buffer"
+import styled from 'styled-components'
 
 export default class App extends Component {
     initScene = (vertices, faces) => {
@@ -13,7 +14,7 @@ export default class App extends Component {
         const renderer = new three.WebGLRenderer()
         renderer.setClearColor(0xe0e0e0)
         renderer.setPixelRatio(window.devicePixelRatio)
-        renderer.setSize(window.innerWidth, window.innerHeight)
+        renderer.setSize(window.innerWidth * 0.7, window.innerHeight)
         this.refs.renderer.appendChild(renderer.domElement)
 
         const geometry = this.buildGeometry(vertices, faces)
@@ -166,8 +167,39 @@ export default class App extends Component {
     }
     render() {
         return (
-            <div id="app">
-                <div id="renderer" ref="renderer"></div>
+            <div className="app">
+                <style jsx global>{`
+                    body {
+                        padding: 0;
+                        margin: 0;
+                    }
+                    .app { 
+                        background: #000;
+                        width: 100vw;
+                        height: 100vh;
+                        display: flex;
+                        flex-direction: row;
+                    }
+                    .renderer {
+                        flex: 1 1 auto;
+                    }
+                    .images {
+                        flex: 0 0 auto;
+                        width: 30%;
+                        display: flex;
+                        flex-direction: column;
+                    }
+                    .images > .image {
+                        flex: 1 1 auto;
+                        display: block;
+                        border: none;
+                    }
+                    `}</style>
+                <div className="renderer" ref="renderer" />
+                <div className="images">
+                    <img className="image" ref="image_top" src="" />
+                    <img className="image" ref="image_bottom" src="" />
+                </div>
             </div>
         )
     }

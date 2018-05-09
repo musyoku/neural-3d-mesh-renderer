@@ -1,7 +1,6 @@
 import os, sys, argparse
 sys.path.append(os.path.join(".."))
 import neural_mesh_renderer as nmr
-import numpy as np
 
 
 def main():
@@ -14,10 +13,7 @@ def main():
     print(vertices)
 
     vertices = nmr.vertices.project_perspective(vertices, 45)
-    print(vertices)
-
     nmr.image.draw_vertices(vertices, (256, 256))
-    return
 
     if args.use_browser:
         # ブラウザのビューワを起動
