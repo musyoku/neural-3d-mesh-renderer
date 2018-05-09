@@ -1,11 +1,12 @@
 import os, sys, argparse
 sys.path.append(os.path.join(".."))
 import neural_mesh_renderer as nmr
+import numpy as np
 
 
 def main():
     # オブジェクトの読み込み
-    vertices, faces = nmr.objects.load("../objects/bunny.obj")
+    vertices, faces = nmr.objects.load("../objects/teapot.obj")
 
     # カメラ座標系に変換
     vertices = nmr.vertices.transform_to_camera_coordinate_system(
@@ -14,6 +15,9 @@ def main():
 
     vertices = nmr.vertices.project_perspective(vertices, 45)
     print(vertices)
+
+    nmr.image.draw_vertices(vertices, (256, 256))
+    return
 
     if args.use_browser:
         # ブラウザのビューワを起動

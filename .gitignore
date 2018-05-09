@@ -12,6 +12,8 @@
 !python/objects/teapot.obj/faces
 !python/objects/cube.obj/vertices
 !python/objects/cube.obj/faces
+!python/objects/bunny.obj/vertices
+!python/objects/bunny.obj/faces
 
 # ignore
 js/node_modules

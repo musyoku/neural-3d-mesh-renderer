@@ -7,7 +7,7 @@ import sys
 
 
 def main():
-    vertices, faces = nmr.objects.load("../objects/dragon.obj")
+    vertices, faces = nmr.objects.load("../objects/bunny.obj")
     browser = nmr.browser.Silhouette("localhost", 8080)
     browser.init_object(vertices, faces)
 
