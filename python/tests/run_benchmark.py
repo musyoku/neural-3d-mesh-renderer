@@ -7,7 +7,7 @@ import sys
 
 
 def main():
-    vertices, faces = nmr.objects.load("../objects/teapot.obj")
+    vertices, faces = nmr.objects.load("../objects/dragon.obj")
     browser = nmr.browser.Silhouette("localhost", 8080)
     browser.init_object(vertices, faces)
 
@@ -21,7 +21,7 @@ def main():
             [0, 0, 1],
         ])
         noise_vertices = np.dot(vertices, rotation.T) + np.random.normal(
-            0, 0.05, size=vertices.shape)
+            0, 0.02, size=vertices.shape)
         browser.update_object(noise_vertices)
         elasped_time = time.time() - start_time
         sys.stdout.write("\r{}FPS".format(int(i / elasped_time)))

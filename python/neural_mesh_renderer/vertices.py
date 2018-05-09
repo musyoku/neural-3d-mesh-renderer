@@ -9,19 +9,13 @@ def angle_to_radian(angle):
 # 透視変換
 # https://qiita.com/ryutorion/items/0824a8d6f27564e850c9
 # http://satoh.cs.uec.ac.jp/ja/lecture/ComputerGraphics/3.pdf
-def project_perspective(vertices,
-                        viewing_angle_x,
-                        viewing_angle_y,
-                        z_max=10,
-                        z_min=1,
-                        d=1):
+def project_perspective(vertices, viewing_angle, z_max=10, z_min=1, d=1):
     z = vertices[:, None, 2]
     z_a = (z_max + z_min) / (z_max - z_min)
     z_b = 2.0 * z_max * z_min / (z_max - z_min)
-    viewing_rad_x_half = angle_to_radian(viewing_angle_x / 2.0)
-    viewing_rad_y_half = angle_to_radian(viewing_angle_y / 2.0)
-    projection_mat = np.asarray([[1.0 / math.tan(viewing_rad_x_half), 0, 0],
-                                 [0.0, 1.0 / math.tan(viewing_rad_y_half),
+    viewing_rad_half = angle_to_radian(viewing_angle / 2.0)
+    projection_mat = np.asarray([[1.0 / math.tan(viewing_rad_half), 0, 0],
+                                 [0.0, 1.0 / math.tan(viewing_rad_half),
                                   0], [0, 0, z_a]])
     vertices = np.dot(vertices, projection_mat)
     vertices += np.asarray([[0, 0, z_b]])

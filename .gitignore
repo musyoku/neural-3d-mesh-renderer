@@ -10,6 +10,8 @@
 !.gitignore
 !python/objects/teapot.obj/vertices
 !python/objects/teapot.obj/faces
+!python/objects/cube.obj/vertices
+!python/objects/cube.obj/faces
 
 # ignore
 js/node_modules
