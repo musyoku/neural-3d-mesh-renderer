@@ -7,6 +7,15 @@ import blob_to_buffer from "blob-to-buffer"
 import styled from 'styled-components'
 
 export default class App extends Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            "top_silhouette": {
+                "width": 128,
+                "height": 128,
+            }
+        }
+    }
     initScene = (vertices, faces) => {
         const scene = new three.Scene()
         const camera = new three.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
@@ -147,6 +156,49 @@ export default class App extends Component {
         }
         this.updateVertices(vertices)
     }
+    onInitSilhouetteArea = (buffer) => {
+        let offset = 1
+        const width = buffer.readInt32LE(offset)
+        offset += 4
+        const height = buffer.readInt32LE(offset)
+        offset += 4
+        this.setState({
+            "top_silhouette": {
+                width, height
+            }
+        })
+    }
+    onUpdateTopSilhouette = (buffer) => {
+        let offset = 1
+        const num_pixels = buffer.readInt32LE(offset)
+        offset += 4
+        const height = buffer.readInt32LE(offset)
+        offset += 4
+        const width = buffer.readInt32LE(offset)
+        offset += 4
+        const vertices = []
+
+        // データをcanvasのcontextに設定
+        const canvas = new Canvas(width, height)
+        const ctx = canvas.getContext("2d")
+
+        // RGBの画素値の配列を取得
+        const data = ctx.getImageData(0, 0, width, height)
+
+        for (let p = 0; p < num_pixels; p++) {
+            const value = buffer.readUInt8(offset)
+            offset += 1
+            const x = p % width
+            const y = parseInt(Math.floor(p / width))
+            const index = (y * data.width + x) * 4
+            data.data[index + 0] = value    // R
+            data.data[index + 1] = value    // G
+            data.data[index + 2] = value    // B
+            data.data[index + 3] = 1        // A
+        }
+
+        ctx.putImageData(data, 0, 0)
+    }
     componentDidMount = () => {
         this.ws = new WebSocketClient("localhost", 8081)
         this.ws.addEventListener("message", (event) => {
@@ -161,6 +213,12 @@ export default class App extends Component {
                 }
                 if (event_code === enums.event.update_object) {
                     this.onUpdateObject(buffer)
+                }
+                if (event_code === enums.event.update_top_image) {
+                    this.onUpdateTopSilhouette(buffer)
+                }
+                if (event_code === enums.event.init_silhouette_area) {
+                    this.onInitSilhouetteArea(buffer)
                 }
             })
         })
@@ -183,22 +241,26 @@ export default class App extends Component {
                     .renderer {
                         flex: 1 1 auto;
                     }
-                    .images {
+                    .silhouette_area {
                         flex: 0 0 auto;
                         width: 30%;
                         display: flex;
                         flex-direction: column;
                     }
-                    .images > .image {
+                    .silhouette_area > .silhouette {
                         flex: 1 1 auto;
                         display: block;
                         border: none;
                     }
                     `}</style>
                 <div className="renderer" ref="renderer" />
-                <div className="images">
-                    <img className="image" ref="image_top" src="" />
-                    <img className="image" ref="image_bottom" src="" />
+                <div className="silhouette_area">
+                    <div className="silhouette">
+                        <canvas className="canvas" ref="top_canvas" width={this.state.top_silhouette.width} height={this.state.top_silhouette.height} />
+                    </div>
+                    <div className="silhouette">
+                        <canvas className="canvas" ref="bottom_canvas" />
+                    </div>
                 </div>
             </div>
         )

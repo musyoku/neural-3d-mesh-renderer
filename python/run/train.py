@@ -12,14 +12,16 @@ def main():
         vertices, 5, 0, 0)
     print(vertices)
 
+    silhouette_size = (256, 256)
+
     vertices = nmr.vertices.project_perspective(vertices, 45)
-    nmr.image.draw_vertices(vertices, (256, 256))
+    image_data = nmr.image.draw_vertices(vertices, silhouette_size)
+    print(image_data.shape)
 
     if args.use_browser:
         # ブラウザのビューワを起動
         # nodeのサーバーをあらかじめ起動しておかないと繋がらない
-        browser = nmr.browser.Silhouette("localhost", 8080)
-        browser.init_object(vertices, faces)
+        browser = nmr.browser.Silhouette(8080, vertices, faces, silhouette_size)
 
 
 if __name__ == "__main__":

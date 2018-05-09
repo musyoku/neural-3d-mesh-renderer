@@ -17,7 +17,7 @@ wss.on("connection", (ws) => {
 
 app.prepare().then(() => {
     const server = express()
-    server.post("/init_object", (req, res) => {
+    server.post("/silhouette/init_object", (req, res) => {
         // websocketで送られてくるデータの種類を表す整数値を先頭に入れる
         const data = [Buffer.from([enums.event.init_object])]
         // 逐次的にデータの読み出しが行われる
@@ -35,7 +35,7 @@ app.prepare().then(() => {
             "success": true
         })
     })
-    server.post("/update_object", (req, res) => {
+    server.post("/silhouette/update_object", (req, res) => {
         // websocketで送られてくるデータの種類を表す整数値を先頭に入れる
         const data = [Buffer.from([enums.event.update_object])]
         // 逐次的にデータの読み出しが行われる
@@ -53,8 +53,44 @@ app.prepare().then(() => {
             "success": true
         })
     })
-    server.get("/", (req, res) => {
-        return app.render(req, res, "/", {})
+    server.post("/silhouette/update_top_image", (req, res) => {
+        // websocketで送られてくるデータの種類を表す整数値を先頭に入れる
+        const data = [Buffer.from([enums.event.update_object])]
+        // 逐次的にデータの読み出しが行われる
+        req.on("data", (chunk) => {
+            data.push(chunk)
+        })
+        // 全データを読み込んだら呼ばれる
+        req.on("end", () => {
+            const buffer = Buffer.concat(data)
+            wss.clients.forEach(client => {
+                client.send(buffer)     // バイナリデータをそのまま送る
+            })
+        })
+        res.send({
+            "success": true
+        })
+    })
+    server.post("/silhouette/init_silhouette_area", (req, res) => {
+        // websocketで送られてくるデータの種類を表す整数値を先頭に入れる
+        const data = [Buffer.from([enums.event.init_silhouette_area])]
+        // 逐次的にデータの読み出しが行われる
+        req.on("data", (chunk) => {
+            data.push(chunk)
+        })
+        // 全データを読み込んだら呼ばれる
+        req.on("end", () => {
+            const buffer = Buffer.concat(data)
+            wss.clients.forEach(client => {
+                client.send(buffer)     // バイナリデータをそのまま送る
+            })
+        })
+        res.send({
+            "success": true
+        })
+    })
+    server.get("/silhouette", (req, res) => {
+        return app.render(req, res, "/silhouette", {})
     })
     server.get("*", (req, res) => {
         return handle(req, res)

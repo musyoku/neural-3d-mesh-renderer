@@ -3,13 +3,36 @@ import struct
 
 
 class Silhouette:
-    def __init__(self, domain, port):
-        self.base_url = "http://{}:{}".format(domain, port)
+    def __init__(self, port, vertices, faces, silhouette_size):
+        self.base_url = "http://localhost:{}/silhouette".format(port)
         print(self.base_url)
+        self.init_object(vertices, faces)
+        self.init_silhouette_area(silhouette_size)
 
     def pack(self, vertices, faces):
         return struct.pack("=i{}f".format(vertices.size), vertices.shape[0],
                            *vertices.flatten("C"))
+
+    def init_silhouette_area(self, silhouette_size):
+        data = struct.pack("<2i", silhouette_size[0], silhouette_size[1])
+        res = requests.post(
+            url="{}/init_silhouette_area".format(self.base_url),
+            data=data,
+            headers={'Content-Type': 'application/octet-stream'})
+
+    def update_top_silhouette(self, image):
+        assert (len(image.shape) == 2)
+        data = struct.pack(
+            "<3i{}c".format(image.size),
+            image.size,
+            image.shape[0],  # 高さ
+            image.shape[1],  # 幅
+            *image.flatten("C"),
+        )
+        requests.post(
+            url="{}/update_top_image".format(self.base_url),
+            data=data,
+            headers={'Content-Type': 'application/octet-stream'})
 
     def init_object(self, vertices, faces):
         # 先頭に頂点数を入れ、続けて座標を入れる
