@@ -15,7 +15,7 @@ class Silhouette:
 
     def init_silhouette_area(self, silhouette_size):
         data = struct.pack("<2i", silhouette_size[0], silhouette_size[1])
-        res = requests.post(
+        requests.post(
             url="{}/init_silhouette_area".format(self.base_url),
             data=data,
             headers={'Content-Type': 'application/octet-stream'})

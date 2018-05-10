@@ -24,6 +24,9 @@ export default class App extends Component {
         renderer.setClearColor(0xe0e0e0)
         renderer.setPixelRatio(window.devicePixelRatio)
         renderer.setSize(window.innerWidth * 0.7, window.innerHeight)
+        if (this.renderer) {
+            this.refs.renderer.removeChild(this.renderer.domElement)
+        }
         this.refs.renderer.appendChild(renderer.domElement)
 
         const geometry = this.buildGeometry(vertices, faces)
@@ -260,6 +263,10 @@ export default class App extends Component {
                         flex: 1 1 auto;
                         display: block;
                         border: none;
+                    }
+                    .silhouette_area > .silhouette > .canvas{
+                        width: 100%;
+                        height: auto;
                     }
                     `}</style>
                 <div className="renderer" ref="renderer" />
