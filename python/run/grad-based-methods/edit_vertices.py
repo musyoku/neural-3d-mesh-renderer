@@ -6,7 +6,7 @@ import neural_mesh_renderer as nmr
 
 def main():
     # オブジェクトの読み込み
-    vertices, faces = nmr.objects.load("../../objects/teapot.obj")
+    vertices, faces = nmr.objects.load("../../objects/cube.obj")
 
     # ミニバッチ化
     vertices_batch = vertices[None, :]
@@ -15,6 +15,8 @@ def main():
     # カメラ座標系に変換
     vertices_batch = nmr.vertices.transform_to_camera_coordinate_system(
         vertices_batch, 5, 0, 0)
+
+    face_vertices_batch = nmr.vertices.convert_to_face_representation(vertices_batch, faces_batch)
 
     silhouette_size = (256, 256)
 
