@@ -3,6 +3,8 @@ from distutils.extension import Extension
 from Cython.Distutils import build_ext
 from Cython.Build import cythonize
 import numpy
+import shutil
+import os
 
 setup(
     ext_modules=cythonize(
@@ -19,3 +21,8 @@ setup(
         build_dir="build"),
     cmdclass={"build_ext": build_ext},
 )
+
+filenames = os.listdir(".")
+for filename in filenames:
+    if filename.endswith(".so"):
+        shutil.move(filename, os.path.join("..", "rasterize", filename))

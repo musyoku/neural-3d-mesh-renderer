@@ -16,9 +16,18 @@ def main():
     vertices_batch = nmr.vertices.transform_to_camera_coordinate_system(
         vertices_batch, 5, 0, 0)
 
-    face_vertices_batch = nmr.vertices.convert_to_face_representation(vertices_batch, faces_batch)
+    face_vertices_batch = nmr.vertices.convert_to_face_representation(
+        vertices_batch, faces_batch)
 
     silhouette_size = (256, 256)
+
+    print(face_vertices_batch.shape)
+    batch_size = face_vertices_batch.shape[0]
+    face_index_map = np.zeros((batch_size, ) + silhouette_size, dtype=np.int32)
+    nmr.rasterize.forward_face_index_map_cpu(face_vertices_batch,
+                                             face_index_map)
+    print(face_index_map)
+    return
 
     vertices_batch = nmr.vertices.project_perspective(vertices_batch, 45)
     image_data = nmr.image.draw_vertices(vertices_batch[0], silhouette_size)
