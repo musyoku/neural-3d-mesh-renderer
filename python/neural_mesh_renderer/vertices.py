@@ -24,26 +24,25 @@ def convert_to_face_representation(vertices, faces):
 
 # 透視変換
 # https://qiita.com/ryutorion/items/0824a8d6f27564e850c9
-# http://satoh.cs.uec.ac.jp/ja/lecture/ComputerGraphics/3.pdf
-def project_perspective(vertices, viewing_angle, z_max=5, z_min=1, d=1):
+# ただしこの記事とは違いz \in [0, 1] であり、z_maxとz_minは鏡像変換後のz座標という違いがある
+def project_perspective(vertices, viewing_angle, z_max=5, z_min=0, d=1):
     assert (vertices.ndim == 3)
     assert (vertices.shape[2] == 3)
 
     xp = chainer.cuda.get_array_module(vertices)
+
+    # 鏡像変換
+    vertices *= xp.asarray([[1.0 / z_max, 1.0 / z_max, -1.0 / z_max]])
+
     z = vertices[..., None, 2]
-    z_a = (z_max + z_min) / (z_max - z_min)
-    z_b = 2.0 * z_max * z_min / (z_max - z_min)
+    z_a = z_max / (z_max - z_min)
+    z_b = (z_max * z_min) / (z_min - z_max)
     viewing_rad_half = angle_to_radian(viewing_angle / 2.0)
     projection_mat = xp.asarray([[1.0 / math.tan(viewing_rad_half), 0, 0],
                                  [0.0, 1.0 / math.tan(viewing_rad_half),
                                   0], [0, 0, z_a]])
-    vertices = xp.dot(vertices, projection_mat)
+    vertices = xp.dot(vertices, projection_mat.T)
     vertices += xp.asarray([[0, 0, z_b]])
-    vertices /= z
-
-    ##########
-    vertices /= xp.asarray([[1, 1, z_max]])
-    ##########
 
     return vertices.astype(xp.float32)
 
@@ -51,15 +50,14 @@ def project_perspective(vertices, viewing_angle, z_max=5, z_min=1, d=1):
 # カメラ座標系への変換
 # 右手座標系
 # カメラから見える範囲にあるオブジェクトのz座標は全て負になる
-def transform_to_camera_coordinate_system(vertices, distance_z, angle_x,
-                                          angle_y):
+def transform_to_camera_coordinate_system(vertices, distance_from_object,
+                                          angle_x, angle_y):
     assert (vertices.ndim == 3)
     assert (vertices.shape[2] == 3)
 
     xp = chainer.cuda.get_array_module(vertices)
     rad_x = angle_to_radian(angle_x)
     rad_y = angle_to_radian(angle_y)
-    # rad_z = angle_to_radian(180.0)
     rotation_mat_x = xp.asarray([
         [1, 0, 0],
         [0, math.cos(rad_x), -math.sin(rad_x)],
@@ -70,13 +68,7 @@ def transform_to_camera_coordinate_system(vertices, distance_z, angle_x,
         [0, 1, 0],
         [-math.sin(rad_y), 0, math.cos(rad_y)],
     ])
-    # rotation_mat_z = xp.asarray([
-    #     [math.cos(rad_z), -math.sin(rad_z), 0],
-    #     [math.sin(rad_z), math.cos(rad_z), 0],
-    #     [0, 0, 1],
-    # ])
     vertices = xp.dot(vertices, rotation_mat_x.T)
     vertices = xp.dot(vertices, rotation_mat_y.T)
-    vertices += xp.asarray([[0, 0, -distance_z]])
-    # vertices = xp.dot(vertices, rotation_mat_z.T)
+    vertices += xp.asarray([[0, 0, -distance_from_object]])
     return vertices.astype(xp.float32)
