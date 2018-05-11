@@ -1,17 +1,17 @@
 import os, sys, argparse
 import math
 import numpy as np
-sys.path.append(os.path.join("..", ".."))
+sys.path.append(os.path.join(".."))
 import neural_mesh_renderer as nmr
 
 
 def main():
     # オブジェクトの読み込み
-    vertices, faces = nmr.objects.load("../../objects/teapot.obj")
+    vertices, faces = nmr.objects.load("../objects/teapot.obj")
 
     # ミニバッチ化
-    vertices_batch = vertices[None, ...]
-    faces_batch = faces[None, ...]
+    vertices_batch = vertices[None, :]
+    faces_batch = faces[None, :]
 
     silhouette_size = (256, 256)
 

@@ -5,6 +5,29 @@ def angle_to_radian(angle):
     return angle / 180.0 * math.pi
 
 
+def rotate_x(vertices, angle):
+    xp = chainer.cuda.get_array_module(vertices)
+    rad = math.pi * (angle % 360) / 180.0
+    rotation_mat = xp.asarray([
+        [1, 0, 0],
+        [0, math.cos(rad), -math.sin(rad)],
+        [0, math.sin(rad), math.cos(rad)],
+    ])
+    vertices = xp.dot(vertices, rotation_mat.T)
+    return vertices
+
+
+def rotate_y(vertices, angle):
+    xp = chainer.cuda.get_array_module(vertices)
+    rad = math.pi * (angle % 360) / 180.0
+    rotation_mat = xp.asarray([
+        [math.cos(rad), 0, math.sin(rad)],
+        [0, 1, 0],
+        [-math.sin(rad), 0, math.cos(rad)],
+    ])
+    vertices = xp.dot(vertices, rotation_mat.T)
+    return vertices
+
 # 各面の各頂点番号に対応する座標を取る
 def convert_to_face_representation(vertices, faces):
     assert (vertices.ndim == 3)
@@ -31,7 +54,7 @@ def project_perspective(vertices, viewing_angle, z_max=5, z_min=0, d=1):
 
     xp = chainer.cuda.get_array_module(vertices)
 
-    # 鏡像変換
+    # 鏡像変換と正規化
     vertices *= xp.asarray([[1.0 / z_max, 1.0 / z_max, -1.0 / z_max]])
 
     z = vertices[..., None, 2]

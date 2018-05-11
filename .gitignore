@@ -8,7 +8,7 @@
 !*.py
 !*.pyx
 !*.h
-!*.c
+!*.cpp
 !*.md
 !.gitignore
 !python/objects/teapot.obj/vertices
@@ -22,6 +22,5 @@
 js/node_modules
 js/.next
 js/package-lock.json
-python/neural_mesh_renderer/cython/*.c
 .vscode
 build

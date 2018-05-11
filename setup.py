@@ -11,8 +11,8 @@ setup(
         Extension(
             "rasterize_cpu",
             [
-                "rasterize.pyx",
-                "src/rasterize.cpp"
+                "cython/rasterize.pyx",
+                "cython/src/rasterize.cpp"
             ],
             extra_compile_args=["-O3", "-std=c++11"],
             language="c++",
@@ -25,4 +25,4 @@ setup(
 filenames = os.listdir(".")
 for filename in filenames:
     if filename.endswith(".so"):
-        shutil.move(filename, os.path.join("..", "rasterize", filename))
+        shutil.move(filename, os.path.join("python/neural_mesh_renderer/rasterize", filename))
