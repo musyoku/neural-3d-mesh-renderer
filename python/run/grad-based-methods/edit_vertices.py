@@ -15,7 +15,6 @@ def main():
     # カメラ座標系に変換
     # vertices_batch = nmr.vertices.transform_to_camera_coordinate_system(
     #     vertices_batch, 5, 0, 0)
-    vertices_batch += np.asarray([[0, 0, 3]], dtype=np.float32)
 
     silhouette_size = (256, 256)
 
@@ -30,10 +29,28 @@ def main():
                                          np.ascontiguousarray(faces_batch[0]),
                                          silhouette_size)
 
-        for loop in range(1000):
-            perspective_vertices_batch = nmr.vertices.project_perspective(
-                vertices_batch, 100) + np.random.normal(
+        for loop in range(10000):
+
+            #########
+            import math
+            rad_x = math.pi * (loop % 360) / 180.0
+            rotation_mat_x = np.asarray([
+                [1, 0, 0],
+                [0, math.cos(rad_x), -math.sin(rad_x)],
+                [0, math.sin(rad_x), math.cos(rad_x)],
+            ])
+            # print(vertices_batch.shape, rotation_mat_x.shape)
+            rotated_vertices_batch = np.dot(
+                vertices_batch, rotation_mat_x.T) + np.random.normal(
                     0, 0.02, size=vertices_batch.shape)
+            perspective_vertices_batch = rotated_vertices_batch + np.asarray(
+                [[0, 0, -3]], dtype=np.float32)
+            perspective_vertices_batch /= np.asarray(
+                [[2, 2, -5]], dtype=np.float32)
+            #########
+
+            # perspective_vertices_batch = nmr.vertices.project_perspective(
+            #     vertices_batch, 100)
 
             #################
             face_vertices_batch = nmr.vertices.convert_to_face_representation(
@@ -46,7 +63,7 @@ def main():
                 (batch_size, ) + silhouette_size, dtype=np.float32)
             nmr.rasterize.forward_face_index_map_cpu(face_vertices_batch,
                                                      face_index_map, depth_map)
-            # print(vertices_batch)
+            # print(perspective_vertices_batch)
             # print(face_index_map)
             depth_map = np.ascontiguousarray(
                 (1.0 - depth_map[0]) * 255).astype(np.uint8)
@@ -57,7 +74,7 @@ def main():
                 perspective_vertices_batch[0], silhouette_size)
             browser.update_top_silhouette(depth_map)
             browser.update_object(
-                np.ascontiguousarray(perspective_vertices_batch[0]))
+                np.ascontiguousarray(rotated_vertices_batch[0]))
 
 
 if __name__ == "__main__":
