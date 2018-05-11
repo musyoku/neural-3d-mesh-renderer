@@ -13,7 +13,12 @@ export default class App extends Component {
             "top_silhouette": {
                 "width": 128,
                 "height": 128,
-            }
+            },
+            "top_silhouette": {
+                "width": 128,
+                "height": 128,
+            },
+            "silhouette_area_width": 0
         }
     }
     initScene = (vertices, faces) => {
@@ -23,7 +28,7 @@ export default class App extends Component {
         const renderer = new three.WebGLRenderer()
         renderer.setClearColor(0xe0e0e0)
         renderer.setPixelRatio(window.devicePixelRatio)
-        renderer.setSize(window.innerWidth * 0.7, window.innerHeight)
+        renderer.setSize(window.innerWidth - (window.innerHeight / 2.0), window.innerHeight)
         if (this.renderer) {
             this.refs.renderer.removeChild(this.renderer.domElement)
         }
@@ -234,8 +239,13 @@ export default class App extends Component {
                 }
             })
         })
+        const silhouette_area_width = window.innerHeight / 2.0
+        this.setState({
+            silhouette_area_width
+        })
     }
     render() {
+        const silhouette_style = { "width": this.state.silhouette_area_width, "height": this.state.silhouette_area_width }
         return (
             <div className="app">
                 <style jsx global>{`
@@ -247,6 +257,7 @@ export default class App extends Component {
                         background: #000;
                         width: 100vw;
                         height: 100vh;
+                        overflow: hidden;
                         display: flex;
                         flex-direction: row;
                     }
@@ -255,7 +266,6 @@ export default class App extends Component {
                     }
                     .silhouette_area {
                         flex: 0 0 auto;
-                        width: 30%;
                         display: flex;
                         flex-direction: column;
                     }
@@ -270,11 +280,11 @@ export default class App extends Component {
                     }
                     `}</style>
                 <div className="renderer" ref="renderer" />
-                <div className="silhouette_area">
-                    <div className="silhouette">
+                <div className="silhouette_area" style={{ "width": this.state.silhouette_area_width }}>
+                    <div className="silhouette" style={silhouette_style}>
                         <canvas className="canvas" ref="top_canvas" width={this.state.top_silhouette.width} height={this.state.top_silhouette.height} />
                     </div>
-                    <div className="silhouette">
+                    <div className="silhouette" style={silhouette_style}>
                         <canvas className="canvas" ref="bottom_canvas" />
                     </div>
                 </div>

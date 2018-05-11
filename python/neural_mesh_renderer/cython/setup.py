@@ -12,10 +12,10 @@ setup(
             "rasterize_cpu",
             [
                 "rasterize.pyx",
-                "src/rasterize.c"
+                "src/rasterize.cpp"
             ],
-            extra_compile_args=["-O3"],
-            language="c",
+            extra_compile_args=["-O3", "-std=c++11"],
+            language="c++",
             include_dirs=[numpy.get_include()],
         ),
         build_dir="build"),

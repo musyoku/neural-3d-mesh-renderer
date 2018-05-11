@@ -1,7 +1,8 @@
 #pragma once
 void cpp_forward_face_index_map(
-    double* arr_a,
-    int* arr_b,
+    float* faces,
+    int* face_index_map,
+    float* depth_map,
     int batch_size,
     int num_faces,
     int image_width,
