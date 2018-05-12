@@ -49,6 +49,9 @@ app.prepare().then(() => {
     server.post("/silhouette/update_top_silhouette", (req, res) => {
         pack(req, res, enums.event.update_top_silhouette, broadcast)
     })
+    server.post("/silhouette/update_bottom_silhouette", (req, res) => {
+        pack(req, res, enums.event.update_bottom_silhouette, broadcast)
+    })
     server.post("/silhouette/init_silhouette_area", (req, res) => {
         pack(req, res, enums.event.init_silhouette_area, broadcast)
     })

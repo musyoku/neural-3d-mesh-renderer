@@ -51,15 +51,28 @@ def main():
                 (batch_size, ) + silhouette_size, dtype=np.int32)
             depth_map = np.zeros(
                 (batch_size, ) + silhouette_size, dtype=np.float32)
-            nmr.rasterize.forward_face_index_map_cpu(face_vertices_batch,
-                                                     face_index_map, depth_map)
+            nmr.rasterizer.forward_face_index_map_cpu(
+                face_vertices_batch, face_index_map, depth_map)
             depth_map = np.ascontiguousarray(
                 (1.0 - depth_map[0]) * 255).astype(np.uint8)
             #################
 
             silhouette_data = nmr.image.draw_vertices(
                 perspective_vertices_batch[0], silhouette_size)
+
+            #################
+            pixel_map = silhouette_data[None, ...].astype(np.int32)
+            grad_vertices = np.zeros_like(vertices_batch, dtype=np.float32)
+            grad_silhouette = np.zeros_like(pixel_map, dtype=np.float32)
+            debug_grad_map = np.zeros_like(pixel_map, dtype=np.float32)
+            nmr.rasterizer.backward_silhouette_cpu(
+                faces_batch, face_vertices_batch, vertices_batch,
+                face_index_map, pixel_map, grad_vertices,
+                grad_silhouette, debug_grad_map)
+            #################
+
             browser.update_top_silhouette(depth_map)
+            browser.update_bottom_silhouette(np.uint8(debug_grad_map[0] * 255))
             browser.update_object(
                 np.ascontiguousarray(modified_vertices_batch[0]))
 

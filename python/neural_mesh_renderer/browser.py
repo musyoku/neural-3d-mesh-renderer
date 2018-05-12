@@ -34,6 +34,20 @@ class Silhouette:
             data=data,
             headers={'Content-Type': 'application/octet-stream'})
 
+    def update_bottom_silhouette(self, image):
+        assert (len(image.shape) == 2)
+        data = struct.pack(
+            "<3i{}B".format(image.size),
+            image.size,
+            image.shape[0],  # 高さ
+            image.shape[1],  # 幅
+            *image.flatten("C"),
+        )
+        requests.post(
+            url="{}/update_bottom_silhouette".format(self.base_url),
+            data=data,
+            headers={'Content-Type': 'application/octet-stream'})
+
     def init_object(self, vertices, faces):
         # 先頭に頂点数を入れ、続けて座標を入れる
         # 次に面の数を入れ、続けて頂点インデックスを入れる

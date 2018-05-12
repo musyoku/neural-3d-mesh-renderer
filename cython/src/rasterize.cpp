@@ -112,9 +112,11 @@ void backward_outside_edge(
     float yf_b,
     int image_width,
     int image_height,
-    int batch_index,
-    int face_index,
-    int* face_index_map)
+    int target_batch_index,
+    int target_face_index,
+    int* face_index_map,
+    int* pixel_map,
+    float* debug_grad_map)
 {
     assert(xf_a - xf_b != 0);
     assert(yf_a - yf_b != 0);
@@ -145,27 +147,47 @@ void backward_outside_edge(
         int pi_y_inside = (scan_direction == top_to_bottom) ? std::floor(pf_y) : std::ceil(pf_y);
 
         // 交点のy方向について、面の外側（辺が通らない）の画素のy座標
-        int pi_y_outside = (scan_direction == top_to_bottom) ? pi_y_outside - 1 : pi_y_outside + 1;
+        int pi_y_outside = (scan_direction == top_to_bottom) ? pi_y_inside - 1 : pi_y_inside + 1;
         if (pi_y_inside < 0 || pi_y_inside >= image_height) {
             continue;
         }
         if (pi_y_outside < 0 || pi_y_outside >= image_height) {
             continue;
         }
-        int map_index_inside = batch_index * image_width * image_height + pi_y_inside * image_width + pi_x;
-        int map_index_outside = batch_index * image_width * image_height + pi_y_outside * image_width + pi_x;
+        int map_index_inside = target_batch_index * image_width * image_height + pi_y_inside * image_width + pi_x;
+        int map_index_outside = target_batch_index * image_width * image_height + pi_y_outside * image_width + pi_x;
+        int face_index = face_index_map[map_index_inside];
+        if (face_index != target_face_index) {
+            continue;
+        }
+        int pixel_value_inside = pixel_map[map_index_inside];
+
+        // y軸を走査
+        int pi_y_start = (scan_direction == top_to_bottom) ? 0 : pi_y_outside;
+        int pi_y_end = (scan_direction == top_to_bottom) ? pi_y_outside : image_height - 1;
+        for (int pi_y = pi_y_start; pi_y <= pi_y_end; pi_y++) {
+            int map_index_p = target_batch_index * image_width * image_height + pi_y * image_width + pi_x;
+            int pixel_value_p = pixel_map[map_index_p];
+
+            // 走査点と面の輝度値の差
+            float diff_pixel = pixel_value_inside - pixel_value_p;
+            float grad = diff_pixel / std::abs(pi_y - pi_y_inside);
+            debug_grad_map[map_index_p] += grad;
+        }
     }
     // y方向の各画素を走査
 }
 
 // シルエットの誤差から各頂点の勾配を求める
-void backward_silhouette(
-    float* faces,
+void cpp_backward_silhouette(
+    int* faces,
     float* face_vertices,
     float* vertices,
     int* face_index_map,
+    int* pixel_map,
     float* grad_vertices,
     float* grad_silhouette,
+    float* debug_grad_map,
     int batch_size,
     int num_faces,
     int num_vertices,
@@ -177,13 +199,13 @@ void backward_silhouette(
             int fv_index = batch_index * num_faces * 9 + face_index * 9;
             float xf_1 = face_vertices[fv_index + 0];
             float yf_1 = face_vertices[fv_index + 1];
-            float zf_1 = face_vertices[fv_index + 2];
+            // float zf_1 = face_vertices[fv_index + 2];
             float xf_2 = face_vertices[fv_index + 3];
             float yf_2 = face_vertices[fv_index + 4];
-            float zf_2 = face_vertices[fv_index + 5];
+            // float zf_2 = face_vertices[fv_index + 5];
             float xf_3 = face_vertices[fv_index + 6];
             float yf_3 = face_vertices[fv_index + 7];
-            float zf_3 = face_vertices[fv_index + 8];
+            // float zf_3 = face_vertices[fv_index + 8];
 
             // カリングによる裏面のスキップ
             // 面の頂点の並び（1 -> 2 -> 3）が時計回りの場合描画しない
@@ -192,8 +214,9 @@ void backward_silhouette(
             }
 
             // 3辺について
-            for (int edge = 0; edge < 3; edge++) {
-            }
+            backward_outside_edge(xf_1, yf_1, xf_2, yf_2, image_width, image_height, batch_index, face_index, face_index_map, pixel_map, debug_grad_map);
+            backward_outside_edge(xf_2, yf_2, xf_3, yf_3, image_width, image_height, batch_index, face_index, face_index_map, pixel_map, debug_grad_map);
+            backward_outside_edge(xf_3, yf_3, xf_1, yf_1, image_width, image_height, batch_index, face_index, face_index_map, pixel_map, debug_grad_map);
         }
     }
 }

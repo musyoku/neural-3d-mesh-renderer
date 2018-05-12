@@ -1,5 +1,6 @@
 import chainer
 from .forward import forward_face_index_map_cpu
+from .backward import backward_silhouette_cpu
 
 class Rasterize(chainer.Function):
     def __init__(self, image_size, z_min, z_max):

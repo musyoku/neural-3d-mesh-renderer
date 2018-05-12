@@ -216,6 +216,9 @@ export default class App extends Component {
     onUpdateTopSilhouette = (buffer) => {
         this.updateSilhouette(buffer, this.refs.top_canvas)
     }
+    onUpdateBottomSilhouette = (buffer) => {
+        this.updateSilhouette(buffer, this.refs.bottom_canvas)
+    }
     componentDidMount = () => {
         this.ws = new WebSocketClient("localhost", 8081)
         this.ws.addEventListener("message", (event) => {
@@ -233,6 +236,9 @@ export default class App extends Component {
                 }
                 if (event_code === enums.event.update_top_silhouette) {
                     this.onUpdateTopSilhouette(buffer)
+                }
+                if (event_code === enums.event.update_bottom_silhouette) {
+                    this.onUpdateBottomSilhouette(buffer)
                 }
                 if (event_code === enums.event.init_silhouette_area) {
                     this.onInitSilhouetteArea(buffer)
@@ -285,7 +291,7 @@ export default class App extends Component {
                         <canvas className="canvas" ref="top_canvas" width={this.state.top_silhouette.width} height={this.state.top_silhouette.height} />
                     </div>
                     <div className="silhouette" style={silhouette_style}>
-                        <canvas className="canvas" ref="bottom_canvas" />
+                        <canvas className="canvas" ref="bottom_canvas" width={this.state.top_silhouette.width} height={this.state.top_silhouette.height} />
                     </div>
                 </div>
             </div>
