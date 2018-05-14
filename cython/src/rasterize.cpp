@@ -72,16 +72,7 @@ void cpp_forward_face_index_map(
                         continue;
                     }
 
-                    if (xi == 128) {
-                        cout << xi << ", " << yi << " " << xf << ", " << yf << endl;
-                    }
-
                     int map_index = batch_index * image_height * image_width + yi * image_width + xi;
-
-                    /////////////////////
-                    // depth_map[map_index] = 0.1;
-                    // continue;
-                    /////////////////////
 
                     // 重心座標系の各係数を計算
                     // http://zellij.hatenablog.com/entry/20131207/p1
@@ -130,6 +121,7 @@ void backward_outside_edge(
 {
     // 画像の座標系に変換
     // 左上が原点で右下が(image_width, image_height)になる
+    // 画像配列に合わせるためそのような座標系になる
     float xi_a = to_image_coordinate(xf_a, image_width);
     float xi_b = to_image_coordinate(xf_b, image_width);
     float yi_a = (image_height - 1) - to_image_coordinate(yf_a, image_height);
@@ -142,77 +134,64 @@ void backward_outside_edge(
     int bottom_to_top = -1;
     int scan_direction = (xi_a < xi_b) ? bottom_to_top : top_to_bottom;
 
-    // x軸を走査
-    if (xi_a != xi_b) {
-        // 投影座標系と画像座標系の変換で誤差がかなり出るので正確に計算する必要がある
-        float pf_x_start = std::max(std::min(xf_a, xf_b), -1.0f);
-        float pf_x_end = std::min(std::max(xf_a, xf_b), 1.0f);
-        int pi_x_start = std::max((int)std::round(std::min(xi_a, xi_b)), 0);
-        int pi_x_end = std::min((int)std::round(std::max(xi_a, xi_b)), image_width - 1);
-        int length_p = pi_x_end - pi_x_start;
-        float unit_x = 2.0f / image_width;
-        float _f_x = pf_x_start - to_projected_coordinate(pi_x_start, image_width);
-        float _i_x = _f_x / 2.0f * (image_width - 1);
-        float __i_x = pi_x_start - to_image_coordinate(std::min(xf_a, xf_b), image_width);
-        float _f_y_a = yf_a - to_projected_coordinate(yi_a, image_height);
-        float _f_y_b = yf_b - to_projected_coordinate(yi_b, image_height);
-        float _i_y_a = _f_y_a / 2.0f * (image_height - 1);
-        float _i_y_b = _f_y_b / 2.0f * (image_height - 1);
-        for (int pi_x = pi_x_start; pi_x <= pi_x_end; pi_x++) {
-            // 辺上でx座標がpi_xの点を求める
-            // 論文の図の点I_ijに相当（ここでは交点と呼ぶ）
-            float di_x = pi_x - pi_x_start + __i_x;
-            // 投影座標系と画像座標系は上下反転しているので傾きも反転する
-            float pi_y = -(yf_a - yf_b) / (xf_a - xf_b) * di_x + ((xf_a < xf_b) ? yi_a : yi_b);
-            // int pi_x = to_image_coordinate(pf_x, image_width);
-            // int pi_y = to_image_coordinate(-pf_y, image_height);
-            // 交点のy方向について、面の内側の一番辺に近い画素のy座標
-            int pi_y_inside = (scan_direction == top_to_bottom) ? std::floor(pi_y + 0.5) : std::floor(pi_y - 0.5);
-
-            if (pi_x == 128) {
-                cout << "> " << pi_x << ", " << pi_y << " " << pi_y_inside << " " << scan_direction << endl;
-            }
-            // cout << pi_x << ", " << pi_y << ", " << pi_y_inside << ", " << yi_a << ", " << di_x << endl;
-            // 交点のy方向について、面の外側（辺が通らない）の画素のy座標
-            int pi_y_outside = (scan_direction == top_to_bottom) ? pi_y_inside - 1 : pi_y_inside + 1;
-            if (pi_y_inside < 0 || pi_y_inside >= image_height) {
-                continue;
-            }
-            if (pi_y_outside < 0 || pi_y_outside >= image_height) {
-                continue;
-            }
-
-            int map_index_inside = target_batch_index * image_width * image_height + pi_y_inside * image_width + pi_x;
-            int map_index_outside = target_batch_index * image_width * image_height + pi_y_outside * image_width + pi_x;
-            int face_index = face_index_map[map_index_inside];
-
-            
-            int sd = pixel_map[map_index_inside];
-            debug_grad_map[map_index_inside] = 255;
-            if (face_index != target_face_index) {
-                debug_grad_map[map_index_inside] = 64;
-                continue;
-            }
-            int pixel_value_inside = pixel_map[map_index_inside];
-        
-            continue;
-
-            // y軸を走査
-            int si_y_start = (scan_direction == top_to_bottom) ? 0 : pi_y_outside;
-            int si_y_end = (scan_direction == top_to_bottom) ? pi_y_outside : image_height - 1;
+    // 辺に沿ってx軸を走査
+    int pi_x_start = std::max((int)std::round(std::min(xi_a, xi_b)), 0);
+    int pi_x_end = std::min((int)std::round(std::max(xi_a, xi_b)), image_width - 1);
+    // 辺上でx座標がpi_xの点を求める
+    // 論文の図の点I_ijに相当（ここでは交点と呼ぶ）
+    // 交点のy方向について、面の内側の一番辺に近い画素のy座標
+    for (int pi_x = pi_x_start; pi_x <= pi_x_end; pi_x++) {
+        // 辺に当たるまでy軸を走査
+        // ここではスキャンラインと呼ぶことにする
+        if (scan_direction == top_to_bottom) {
+            // まず辺に当たる画素を探す
+            int si_y_start = 0;
+            int si_y_end = image_height - 1; // 実際にはここに到達する前に辺に当たるはず
+            int si_y_edge = 0;
+            int pixel_value_inside = 0;
             for (int si_y = si_y_start; si_y <= si_y_end; si_y++) {
                 int map_index_s = target_batch_index * image_width * image_height + si_y * image_width + pi_x;
-                int pixel_value_s = pixel_map[map_index_s];
-                debug_grad_map[map_index_s] = 255;
-
-                // 内部は除く
                 int face_index = face_index_map[map_index_s];
                 if (face_index == target_face_index) {
-                    continue;
+                    si_y_edge = si_y;
+                    pixel_value_inside = pixel_map[map_index_s];
+                    break;
+                }
+            }
+            for (int si_y = si_y_start; si_y < si_y_edge; si_y++) {
+                int map_index_s = target_batch_index * image_width * image_height + si_y * image_width + pi_x;
+                int pixel_value_outside = pixel_map[map_index_s];
+                // 走査点と面の輝度値の差
+                float diff_pixel = pixel_value_inside - pixel_value_outside;
+                // 頂点の実際の移動量を求める
+                // 相似な三角形なのでx方向の比率から求まる
+                // 点Aについて
+                {
+                    if (pi_x - pi_x_start > 0) {
+                        float moving_distance = (si_y_edge - si_y) / (float)(pi_x - pi_x_start) * (float)(pi_x_end - pi_x_start);
+                        if (moving_distance > 0) {
+                            float grad = diff_pixel / moving_distance;
+                            debug_grad_map[map_index_s] = grad;
+                        }
+                    }
+                }
+            }
+        } else {
+            int si_y_start = image_height - 1;
+            int si_y_end = 0; // 実際にはここに到達する前に辺に当たるはず
+            for (int si_y = si_y_start; si_y >= si_y_end; si_y--) {
+                int map_index_s = target_batch_index * image_width * image_height + si_y * image_width + pi_x;
+                int face_index = face_index_map[map_index_s];
+                int pixel_value_outside = pixel_map[map_index_s];
+
+                if (face_index == target_face_index) {
+                    int pixel_value_inside = pixel_value_outside;
+                    debug_grad_map[map_index_s] = pixel_value_inside;
+                    break;
                 }
                 // 走査点と面の輝度値の差
-                float diff_pixel = pixel_value_inside - pixel_value_s;
-                float grad = diff_pixel / std::abs(si_y - pi_y_inside);
+                // float diff_pixel = pixel_value_inside - pixel_value_outside;
+                // float grad = diff_pixel / std::abs(si_y - pi_y_inside);
             }
         }
     }

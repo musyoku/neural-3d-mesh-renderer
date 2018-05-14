@@ -68,6 +68,9 @@ def main():
                 faces_batch, face_vertices_batch, vertices_batch,
                 face_index_map, silhouette_image, grad_vertices,
                 grad_silhouette, debug_grad_map)
+            
+            debug_grad_map /= np.amax(debug_grad_map)
+            debug_grad_map *= 255
             #################
 
             browser.update_top_silhouette(depth_map)
