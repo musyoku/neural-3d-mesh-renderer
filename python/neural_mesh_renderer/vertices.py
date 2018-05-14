@@ -14,7 +14,7 @@ def rotate_x(vertices, angle):
         [0, math.sin(rad), math.cos(rad)],
     ])
     vertices = xp.dot(vertices, rotation_mat.T)
-    return vertices
+    return vertices.astype(xp.float32)
 
 
 def rotate_y(vertices, angle):
@@ -26,7 +26,7 @@ def rotate_y(vertices, angle):
         [-math.sin(rad), 0, math.cos(rad)],
     ])
     vertices = xp.dot(vertices, rotation_mat.T)
-    return vertices
+    return vertices.astype(xp.float32)
 
 # 各面の各頂点番号に対応する座標を取る
 def convert_to_face_representation(vertices, faces):

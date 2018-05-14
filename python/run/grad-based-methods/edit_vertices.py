@@ -7,7 +7,7 @@ import neural_mesh_renderer as nmr
 
 def main():
     # オブジェクトの読み込み
-    vertices, faces = nmr.objects.load("../../objects/triangle.obj")
+    vertices, faces = nmr.objects.load("../../objects/teapot.obj")
 
     # ミニバッチ化
     vertices_batch = vertices[None, ...]
@@ -26,14 +26,15 @@ def main():
 
         for loop in range(10000):
             # 回転
-            modified_vertices_batch = nmr.vertices.rotate_x(
-                vertices_batch, loop % 360)
-            modified_vertices_batch = nmr.vertices.rotate_y(
-                modified_vertices_batch, loop % 360)
+            vertices_batch = nmr.vertices.rotate_x(
+                vertices_batch, 1)
+            vertices_batch = nmr.vertices.rotate_y(
+                vertices_batch, 1)
+
 
             # カメラ座標系に変換
             perspective_vertices_batch = nmr.vertices.transform_to_camera_coordinate_system(
-                modified_vertices_batch,
+                vertices_batch,
                 distance_from_object=2,
                 angle_x=0,
                 angle_y=0)
@@ -68,15 +69,19 @@ def main():
                 faces_batch, face_vertices_batch, vertices_batch,
                 face_index_map, silhouette_image, grad_vertices,
                 grad_silhouette, debug_grad_map)
-            
+
             debug_grad_map /= np.amax(debug_grad_map)
             debug_grad_map *= 255
+
+            vertices_batch -= 0.000001 * grad_vertices
             #################
+
+            print(grad_vertices)
 
             browser.update_top_silhouette(depth_map)
             browser.update_bottom_silhouette(np.uint8(debug_grad_map[0]))
             browser.update_object(
-                np.ascontiguousarray(modified_vertices_batch[0]))
+                np.ascontiguousarray(vertices_batch[0]))
 
 
 if __name__ == "__main__":
