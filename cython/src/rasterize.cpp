@@ -111,12 +111,16 @@ void backward_outside_edge(
     float yf_a,
     float xf_b,
     float yf_b,
+    int vertex_index_a,
+    int vertex_index_b,
     int image_width,
     int image_height,
     int target_batch_index,
     int target_face_index,
     int* face_index_map,
     int* pixel_map,
+    float* grad_vertices,
+    float* grad_silhouette,
     float* debug_grad_map)
 {
     // 画像の座標系に変換
@@ -144,10 +148,10 @@ void backward_outside_edge(
         // 辺に当たるまでy軸を走査
         // ここではスキャンラインと呼ぶことにする
         if (scan_direction == top_to_bottom) {
-            // まず辺に当たる画素を探す
+            // まずスキャンライン上で辺に当たる画素を探す
             int si_y_start = 0;
             int si_y_end = image_height - 1; // 実際にはここに到達する前に辺に当たるはず
-            int si_y_edge = 0;
+            int si_y_edge = si_y_start;
             int pixel_value_inside = 0;
             for (int si_y = si_y_start; si_y <= si_y_end; si_y++) {
                 int map_index_s = target_batch_index * image_width * image_height + si_y * image_width + pi_x;
@@ -164,34 +168,70 @@ void backward_outside_edge(
                 // 走査点と面の輝度値の差
                 float diff_pixel = pixel_value_inside - pixel_value_outside;
                 // 頂点の実際の移動量を求める
+                // スキャンライン上の移動距離ではない
                 // 相似な三角形なのでx方向の比率から求まる
-                // 点Aについて
+                // 頂点Aについて
                 {
                     if (pi_x - pi_x_start > 0) {
                         float moving_distance = (si_y_edge - si_y) / (float)(pi_x - pi_x_start) * (float)(pi_x_end - pi_x_start);
                         if (moving_distance > 0) {
                             float grad = diff_pixel / moving_distance;
-                            debug_grad_map[map_index_s] = grad;
+                            debug_grad_map[map_index_s] += grad;
+                        }
+                    }
+                }
+                // 頂点Bについて
+                {
+                    if (pi_x - pi_x_start > 0) {
+                        float moving_distance = (si_y_edge - si_y) / (float)(pi_x_end - pi_x) * (float)(pi_x_end - pi_x_start);
+                        if (moving_distance > 0) {
+                            float grad = diff_pixel / moving_distance;
+                            debug_grad_map[map_index_s] += grad;
                         }
                     }
                 }
             }
         } else {
             int si_y_start = image_height - 1;
-            int si_y_end = 0; // 実際にはここに到達する前に辺に当たるはず
+            int si_y_end = 0;
+            int si_y_edge = si_y_start;
+            int pixel_value_inside = 0;
             for (int si_y = si_y_start; si_y >= si_y_end; si_y--) {
                 int map_index_s = target_batch_index * image_width * image_height + si_y * image_width + pi_x;
                 int face_index = face_index_map[map_index_s];
-                int pixel_value_outside = pixel_map[map_index_s];
-
                 if (face_index == target_face_index) {
-                    int pixel_value_inside = pixel_value_outside;
-                    debug_grad_map[map_index_s] = pixel_value_inside;
+                    si_y_edge = si_y;
+                    pixel_value_inside = pixel_map[map_index_s];
                     break;
                 }
+            }
+            for (int si_y = si_y_start; si_y > si_y_edge; si_y--) {
+                int map_index_s = target_batch_index * image_width * image_height + si_y * image_width + pi_x;
+                int pixel_value_outside = pixel_map[map_index_s];
                 // 走査点と面の輝度値の差
-                // float diff_pixel = pixel_value_inside - pixel_value_outside;
-                // float grad = diff_pixel / std::abs(si_y - pi_y_inside);
+                float diff_pixel = pixel_value_inside - pixel_value_outside;
+                // 頂点の実際の移動量を求める
+                // 相似な三角形なのでx方向の比率から求まる
+                // 頂点Aについて
+                {
+                    if (pi_x - pi_x_start > 0) {
+                        float moving_distance = (si_y - si_y_edge) / (float)(pi_x - pi_x_start) * (float)(pi_x_end - pi_x_start);
+                        if (moving_distance > 0) {
+                            float grad = diff_pixel / moving_distance;
+                            debug_grad_map[map_index_s] += grad;
+                        }
+                    }
+                }
+                // 頂点Bについて
+                {
+                    if (pi_x - pi_x_start > 0) {
+                        float moving_distance = (si_y - si_y_edge) / (float)(pi_x_end - pi_x) * (float)(pi_x_end - pi_x_start);
+                        if (moving_distance > 0) {
+                            float grad = diff_pixel / moving_distance;
+                            debug_grad_map[map_index_s] += grad;
+                        }
+                    }
+                }
             }
         }
     }
@@ -227,6 +267,11 @@ void cpp_backward_silhouette(
             float yf_3 = face_vertices[fv_index + 7];
             // float zf_3 = face_vertices[fv_index + 8];
 
+            int v_index = batch_index * num_faces * 3 + face_index * 3;
+            int vertex_1_index = faces[v_index + 0];
+            int vertex_2_index = faces[v_index + 1];
+            int vertex_3_index = faces[v_index + 2];
+
             // カリングによる裏面のスキップ
             // 面の頂点の並び（1 -> 2 -> 3）が時計回りの場合描画しない
             if ((yf_1 - yf_3) * (xf_1 - xf_2) < (yf_1 - yf_2) * (xf_1 - xf_3)) {
@@ -234,9 +279,9 @@ void cpp_backward_silhouette(
             }
 
             // 3辺について
-            backward_outside_edge(xf_1, yf_1, xf_2, yf_2, image_width, image_height, batch_index, face_index, face_index_map, pixel_map, debug_grad_map);
-            backward_outside_edge(xf_2, yf_2, xf_3, yf_3, image_width, image_height, batch_index, face_index, face_index_map, pixel_map, debug_grad_map);
-            backward_outside_edge(xf_3, yf_3, xf_1, yf_1, image_width, image_height, batch_index, face_index, face_index_map, pixel_map, debug_grad_map);
+            backward_outside_edge(xf_1, yf_1, xf_2, yf_2, vertex_1_index, vertex_2_index, image_width, image_height, batch_index, face_index, face_index_map, pixel_map, grad_vertices, grad_silhouette, debug_grad_map);
+            backward_outside_edge(xf_2, yf_2, xf_3, yf_3, vertex_2_index, vertex_3_index, image_width, image_height, batch_index, face_index, face_index_map, pixel_map, grad_vertices, grad_silhouette, debug_grad_map);
+            backward_outside_edge(xf_3, yf_3, xf_1, yf_1, vertex_3_index, vertex_1_index, image_width, image_height, batch_index, face_index, face_index_map, pixel_map, grad_vertices, grad_silhouette, debug_grad_map);
         }
     }
 }
