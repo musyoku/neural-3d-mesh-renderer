@@ -7,6 +7,7 @@ cdef extern from "src/rasterize.h":
         float *face_vertices, 
         int *face_index_map, 
         float *depth_map, 
+        int *silhouette_image, 
         int batch_size,
         int num_faces,
         int image_width,
@@ -32,18 +33,22 @@ cdef extern from "src/rasterize.h":
 def forward_face_index_map(
         np.ndarray[float, ndim=4, mode="c"] face_vertices not None, 
         np.ndarray[int, ndim=3, mode="c"] face_index_map not None,
-        np.ndarray[float, ndim=3, mode="c"] depth_map not None):
+        np.ndarray[float, ndim=3, mode="c"] depth_map not None,
+        np.ndarray[int, ndim=3, mode="c"] silhouette_image not None):
     batch_size, num_faces = face_vertices.shape[:2]
     image_width, image_height = face_index_map.shape[1:3]
     assert(face_vertices.shape[2] == 3)
     assert(face_vertices.shape[3] == 3)
     assert(face_index_map.shape[1] == depth_map.shape[1])
     assert(face_index_map.shape[2] == depth_map.shape[2])
+    assert(face_index_map.shape[1] == silhouette_image.shape[1])
+    assert(face_index_map.shape[2] == silhouette_image.shape[2])
 
     return cpp_forward_face_index_map(
         &face_vertices[0, 0, 0, 0], 
         &face_index_map[0, 0, 0],
         &depth_map[0, 0, 0], 
+        &silhouette_image[0, 0, 0], 
         batch_size,
         num_faces,
         image_width,

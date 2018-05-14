@@ -3,6 +3,7 @@ void cpp_forward_face_index_map(
     float* faces,
     int* face_index_map,
     float* depth_map,
+    int* silhouette_image,
     int batch_size,
     int num_faces,
     int image_width,

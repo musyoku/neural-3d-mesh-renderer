@@ -1,16 +1,27 @@
 #include "rasterize.h"
-#include <cassert>
 #include <cmath>
 #include <iostream>
 
 using std::cout;
 using std::endl;
 
+float to_projected_coordinate(int p, int size)
+{
+    return 2.0 * (p / (float)(size - 1) - 0.5);
+}
+
+// [-1, 1] -> [0, size - 1]
+float to_image_coordinate(float p, int size)
+{
+    return std::min(std::max(((p + 1.0f) * 0.5f * (size - 1)), 0.0f), (float)(size - 1));
+}
+
 // 各画素ごとに最前面を特定する
 void cpp_forward_face_index_map(
     float* face_vertices,
     int* face_index_map,
     float* depth_map,
+    int* silhouette_image,
     int batch_size,
     int num_faces,
     int image_width,
@@ -45,20 +56,24 @@ void cpp_forward_face_index_map(
             // 全画素についてループ
             for (int yi = 0; yi < image_height; yi++) {
                 // yi \in [0, image_height] -> yf \in [-1, 1]
-                float yf = 2.0 * (yi / (float)image_height - 0.5);
+                float yf = to_projected_coordinate((image_height - 1) - yi, image_height);
                 // y座標が面の外部ならスキップ
                 if ((yf > yf_1 && yf > yf_2 && yf > yf_3) || (yf < yf_1 && yf < yf_2 && yf < yf_3)) {
                     continue;
                 }
                 for (int xi = 0; xi < image_width; xi++) {
                     // xi \in [0, image_height] -> xf \in [-1, 1]
-                    float xf = 2.0 * (xi / (float)image_width - 0.5);
+                    float xf = to_projected_coordinate(xi, image_width);
 
                     // xyが面の外部ならスキップ
                     // Edge Functionで3辺のいずれかの右側にあればスキップ
                     // https://www.cs.drexel.edu/~david/Classes/Papers/comp175-06-pineda.pdf
                     if ((yf - yf_1) * (xf_2 - xf_1) < (xf - xf_1) * (yf_2 - yf_1) || (yf - yf_2) * (xf_3 - xf_2) < (xf - xf_2) * (yf_3 - yf_2) || (yf - yf_3) * (xf_1 - xf_3) < (xf - xf_3) * (yf_1 - yf_3)) {
                         continue;
+                    }
+
+                    if (xi == 128) {
+                        cout << xi << ", " << yi << " " << xf << ", " << yf << endl;
                     }
 
                     int map_index = batch_index * image_height * image_width + yi * image_width + xi;
@@ -88,17 +103,12 @@ void cpp_forward_face_index_map(
                         // 現在の面の方が前面の場合
                         depth_map[map_index] = z_face;
                         face_index_map[map_index] = face_index;
+                        silhouette_image[map_index] = 255;
                     }
                 }
             }
         }
     }
-}
-
-// [-1, 1] -> [0, size - 1]
-int to_screen_coordinate(float p, int size)
-{
-    return std::min(std::max((int)((p + 1.0) * 0.5 * (size - 1)), 0), size - 1);
 }
 
 // 点ABからなる辺の外側の画素を網羅
@@ -118,15 +128,12 @@ void backward_outside_edge(
     int* pixel_map,
     float* debug_grad_map)
 {
-    assert(xf_a - xf_b != 0);
-    assert(yf_a - yf_b != 0);
-
-    // 画像の座標に変換
+    // 画像の座標系に変換
     // 左上が原点で右下が(image_width, image_height)になる
-    int xi_a = to_screen_coordinate(xf_a, image_width);
-    int xi_b = to_screen_coordinate(xf_a, image_width);
-    int yi_a = to_screen_coordinate(yf_a, image_height);
-    int yi_b = to_screen_coordinate(yf_a, image_height);
+    float xi_a = to_image_coordinate(xf_a, image_width);
+    float xi_b = to_image_coordinate(xf_b, image_width);
+    float yi_a = (image_height - 1) - to_image_coordinate(yf_a, image_height);
+    float yi_b = (image_height - 1) - to_image_coordinate(yf_b, image_height);
 
     // y方向の走査がどの方向を向いていると辺に当たるか
     // 1:  画像の上から下に進む（yが増加する）方向に進んだ時に辺に当たる
@@ -136,43 +143,77 @@ void backward_outside_edge(
     int scan_direction = (xi_a < xi_b) ? bottom_to_top : top_to_bottom;
 
     // x軸を走査
-    int pi_x_start = std::max(std::min(xi_a, xi_b), 0);
-    int pi_x_end = std::min(std::max(xi_a, xi_b), image_width - 1);
-    for (int pi_x = pi_x_start; pi_x <= pi_x_end; pi_x++) {
-        // 辺上でx座標がpi_xの点を求める
-        // 論文の図の点I_ijに相当（ここでは交点と呼ぶ）
-        float pf_y = (float)(yi_a - yi_b) / (float)(xi_a - xi_b) * (float)(pi_x - xi_a) + yi_a;
+    if (xi_a != xi_b) {
+        // 投影座標系と画像座標系の変換で誤差がかなり出るので正確に計算する必要がある
+        float pf_x_start = std::max(std::min(xf_a, xf_b), -1.0f);
+        float pf_x_end = std::min(std::max(xf_a, xf_b), 1.0f);
+        int pi_x_start = std::max((int)std::round(std::min(xi_a, xi_b)), 0);
+        int pi_x_end = std::min((int)std::round(std::max(xi_a, xi_b)), image_width - 1);
+        int length_p = pi_x_end - pi_x_start;
+        float unit_x = 2.0f / image_width;
+        float _f_x = pf_x_start - to_projected_coordinate(pi_x_start, image_width);
+        float _i_x = _f_x / 2.0f * (image_width - 1);
+        float __i_x = pi_x_start - to_image_coordinate(std::min(xf_a, xf_b), image_width);
+        float _f_y_a = yf_a - to_projected_coordinate(yi_a, image_height);
+        float _f_y_b = yf_b - to_projected_coordinate(yi_b, image_height);
+        float _i_y_a = _f_y_a / 2.0f * (image_height - 1);
+        float _i_y_b = _f_y_b / 2.0f * (image_height - 1);
+        for (int pi_x = pi_x_start; pi_x <= pi_x_end; pi_x++) {
+            // 辺上でx座標がpi_xの点を求める
+            // 論文の図の点I_ijに相当（ここでは交点と呼ぶ）
+            float di_x = pi_x - pi_x_start + __i_x;
+            // 投影座標系と画像座標系は上下反転しているので傾きも反転する
+            float pi_y = -(yf_a - yf_b) / (xf_a - xf_b) * di_x + ((xf_a < xf_b) ? yi_a : yi_b);
+            // int pi_x = to_image_coordinate(pf_x, image_width);
+            // int pi_y = to_image_coordinate(-pf_y, image_height);
+            // 交点のy方向について、面の内側の一番辺に近い画素のy座標
+            int pi_y_inside = (scan_direction == top_to_bottom) ? std::floor(pi_y + 0.5) : std::floor(pi_y - 0.5);
 
-        // 交点のy方向について、面の内側の画素のy座標
-        int pi_y_inside = (scan_direction == top_to_bottom) ? std::floor(pf_y) : std::ceil(pf_y);
+            if (pi_x == 128) {
+                cout << "> " << pi_x << ", " << pi_y << " " << pi_y_inside << " " << scan_direction << endl;
+            }
+            // cout << pi_x << ", " << pi_y << ", " << pi_y_inside << ", " << yi_a << ", " << di_x << endl;
+            // 交点のy方向について、面の外側（辺が通らない）の画素のy座標
+            int pi_y_outside = (scan_direction == top_to_bottom) ? pi_y_inside - 1 : pi_y_inside + 1;
+            if (pi_y_inside < 0 || pi_y_inside >= image_height) {
+                continue;
+            }
+            if (pi_y_outside < 0 || pi_y_outside >= image_height) {
+                continue;
+            }
 
-        // 交点のy方向について、面の外側（辺が通らない）の画素のy座標
-        int pi_y_outside = (scan_direction == top_to_bottom) ? pi_y_inside - 1 : pi_y_inside + 1;
-        if (pi_y_inside < 0 || pi_y_inside >= image_height) {
+            int map_index_inside = target_batch_index * image_width * image_height + pi_y_inside * image_width + pi_x;
+            int map_index_outside = target_batch_index * image_width * image_height + pi_y_outside * image_width + pi_x;
+            int face_index = face_index_map[map_index_inside];
+
+            
+            int sd = pixel_map[map_index_inside];
+            debug_grad_map[map_index_inside] = 255;
+            if (face_index != target_face_index) {
+                debug_grad_map[map_index_inside] = 64;
+                continue;
+            }
+            int pixel_value_inside = pixel_map[map_index_inside];
+        
             continue;
-        }
-        if (pi_y_outside < 0 || pi_y_outside >= image_height) {
-            continue;
-        }
-        int map_index_inside = target_batch_index * image_width * image_height + pi_y_inside * image_width + pi_x;
-        int map_index_outside = target_batch_index * image_width * image_height + pi_y_outside * image_width + pi_x;
-        int face_index = face_index_map[map_index_inside];
-        if (face_index != target_face_index) {
-            continue;
-        }
-        int pixel_value_inside = pixel_map[map_index_inside];
 
-        // y軸を走査
-        int pi_y_start = (scan_direction == top_to_bottom) ? 0 : pi_y_outside;
-        int pi_y_end = (scan_direction == top_to_bottom) ? pi_y_outside : image_height - 1;
-        for (int pi_y = pi_y_start; pi_y <= pi_y_end; pi_y++) {
-            int map_index_p = target_batch_index * image_width * image_height + pi_y * image_width + pi_x;
-            int pixel_value_p = pixel_map[map_index_p];
+            // y軸を走査
+            int si_y_start = (scan_direction == top_to_bottom) ? 0 : pi_y_outside;
+            int si_y_end = (scan_direction == top_to_bottom) ? pi_y_outside : image_height - 1;
+            for (int si_y = si_y_start; si_y <= si_y_end; si_y++) {
+                int map_index_s = target_batch_index * image_width * image_height + si_y * image_width + pi_x;
+                int pixel_value_s = pixel_map[map_index_s];
+                debug_grad_map[map_index_s] = 255;
 
-            // 走査点と面の輝度値の差
-            float diff_pixel = pixel_value_inside - pixel_value_p;
-            float grad = diff_pixel / std::abs(pi_y - pi_y_inside);
-            debug_grad_map[map_index_p] += grad;
+                // 内部は除く
+                int face_index = face_index_map[map_index_s];
+                if (face_index == target_face_index) {
+                    continue;
+                }
+                // 走査点と面の輝度値の差
+                float diff_pixel = pixel_value_inside - pixel_value_s;
+                float grad = diff_pixel / std::abs(si_y - pi_y_inside);
+            }
         }
     }
     // y方向の各画素を走査
