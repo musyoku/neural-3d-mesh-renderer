@@ -24,7 +24,7 @@ def main():
                                          np.ascontiguousarray(faces_batch[0]),
                                          silhouette_size)
 
-        # vertices_batch = nmr.vertices.rotate_x(vertices_batch, 30)
+        # vertices_batch = nmr.vertices.rotate_x(vertices_batch, 90)
         # vertices_batch = nmr.vertices.rotate_y(vertices_batch, 30)
         vertices_batch = nmr.vertices.rotate_z(vertices_batch, 10)
         for loop in range(10000):
@@ -80,7 +80,6 @@ def main():
             debug_grad_map /= np.amax(debug_grad_map)
             debug_grad_map *= 255
 
-            print(grad_vertices_batch)
             vertices_batch -= 0.00005 * grad_vertices_batch
             grad_image = np.copy(grad_silhouette_batch[0]) * 255
             grad_image[grad_image > 0] = 255
