@@ -26,7 +26,7 @@ def main():
 
         # vertices_batch = nmr.vertices.rotate_x(vertices_batch, 90)
         # vertices_batch = nmr.vertices.rotate_y(vertices_batch, 30)
-        vertices_batch = nmr.vertices.rotate_z(vertices_batch, 10)
+        # vertices_batch = nmr.vertices.rotate_z(vertices_batch, 10)
         for loop in range(10000):
             # 回転
 
