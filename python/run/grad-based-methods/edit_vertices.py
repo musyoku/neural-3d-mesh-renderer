@@ -7,7 +7,7 @@ import neural_mesh_renderer as nmr
 
 def main():
     # オブジェクトの読み込み
-    vertices, faces = nmr.objects.load("../../objects/teapot.obj")
+    vertices, faces = nmr.objects.load("../../objects/triangle.obj")
 
     # ミニバッチ化
     vertices_batch = vertices[None, ...]
@@ -24,20 +24,15 @@ def main():
                                          np.ascontiguousarray(faces_batch[0]),
                                          silhouette_size)
 
+        # vertices_batch = nmr.vertices.rotate_x(vertices_batch, 30)
+        # vertices_batch = nmr.vertices.rotate_y(vertices_batch, 30)
+        vertices_batch = nmr.vertices.rotate_z(vertices_batch, 10)
         for loop in range(10000):
             # 回転
-            vertices_batch = nmr.vertices.rotate_x(
-                vertices_batch, 1)
-            vertices_batch = nmr.vertices.rotate_y(
-                vertices_batch, 1)
-
 
             # カメラ座標系に変換
             perspective_vertices_batch = nmr.vertices.transform_to_camera_coordinate_system(
-                vertices_batch,
-                distance_from_object=2,
-                angle_x=0,
-                angle_y=0)
+                vertices_batch, distance_from_object=2, angle_x=0, angle_y=0)
 
             # 透視投影
             perspective_vertices_batch = nmr.vertices.project_perspective(
@@ -48,40 +43,53 @@ def main():
                 perspective_vertices_batch, faces_batch)
             # print(face_vertices_batch.shape)
             batch_size = face_vertices_batch.shape[0]
-            face_index_map = np.full(
+            face_index_map_batch = np.full(
                 (batch_size, ) + silhouette_size, -1, dtype=np.int32)
             depth_map = np.zeros(
                 (batch_size, ) + silhouette_size, dtype=np.float32)
-            silhouette_image = np.zeros(
+            object_silhouette_batch = np.zeros(
                 (batch_size, ) + silhouette_size, dtype=np.int32)
             nmr.rasterizer.forward_face_index_map_cpu(
-                face_vertices_batch, face_index_map, depth_map,
-                silhouette_image)
-            depth_map = np.ascontiguousarray(
+                face_vertices_batch, face_index_map_batch, depth_map,
+                object_silhouette_batch)
+            depth_map_image = np.ascontiguousarray(
                 (1.0 - depth_map[0]) * 255).astype(np.uint8)
             #################
 
             #################
-            grad_vertices = np.zeros_like(vertices_batch, dtype=np.float32)
-            grad_silhouette = np.zeros_like(silhouette_image, dtype=np.float32)
-            debug_grad_map = np.zeros_like(silhouette_image, dtype=np.float32)
-            nmr.rasterizer.backward_silhouette_cpu(
-                faces_batch, face_vertices_batch, vertices_batch,
-                face_index_map, silhouette_image, grad_vertices,
-                grad_silhouette, debug_grad_map)
+            target_silhouette = np.zeros_like(
+                object_silhouette_batch, dtype=np.float32)
+            target_silhouette[:, 100:200, 100:200] = 255
+            grad_vertices_batch = np.zeros_like(
+                vertices_batch, dtype=np.float32)
+            object_silhouette_batch = np.copy((1.0 - depth_map) * 255).astype(
+                np.int32)
+            object_silhouette_batch[object_silhouette_batch > 0] = 255
+            grad_silhouette_batch = -((
+                target_silhouette - object_silhouette_batch) / 255).astype(
+                    np.float32)
 
+            debug_grad_map = np.zeros_like(
+                object_silhouette_batch, dtype=np.float32)
+            nmr.rasterizer.backward_silhouette_cpu(
+                faces_batch, face_vertices_batch, perspective_vertices_batch,
+                face_index_map_batch, object_silhouette_batch,
+                grad_vertices_batch, grad_silhouette_batch, debug_grad_map)
+
+            debug_grad_map = np.abs(debug_grad_map)
             debug_grad_map /= np.amax(debug_grad_map)
             debug_grad_map *= 255
 
-            vertices_batch -= 0.000001 * grad_vertices
+            print(grad_vertices_batch)
+            vertices_batch -= 0.00005 * grad_vertices_batch
+            grad_image = np.copy(grad_silhouette_batch[0]) * 255
+            grad_image[grad_image > 0] = 255
+            grad_image[grad_image < 0] = 64
             #################
 
-            print(grad_vertices)
-
-            browser.update_top_silhouette(depth_map)
+            browser.update_top_silhouette(np.uint8(grad_image))
             browser.update_bottom_silhouette(np.uint8(debug_grad_map[0]))
-            browser.update_object(
-                np.ascontiguousarray(vertices_batch[0]))
+            browser.update_object(np.ascontiguousarray(vertices_batch[0]))
 
 
 if __name__ == "__main__":

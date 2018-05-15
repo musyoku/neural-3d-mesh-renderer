@@ -28,6 +28,19 @@ def rotate_y(vertices, angle):
     vertices = xp.dot(vertices, rotation_mat.T)
     return vertices.astype(xp.float32)
 
+
+def rotate_z(vertices, angle):
+    xp = chainer.cuda.get_array_module(vertices)
+    rad = math.pi * (angle % 360) / 180.0
+    rotation_mat = xp.asarray([
+        [math.cos(rad), -math.sin(rad), 0],
+        [math.sin(rad), math.cos(rad), 0],
+        [0, 0, 1],
+    ])
+    vertices = xp.dot(vertices, rotation_mat.T)
+    return vertices.astype(xp.float32)
+
+
 # 各面の各頂点番号に対応する座標を取る
 def convert_to_face_representation(vertices, faces):
     assert (vertices.ndim == 3)
