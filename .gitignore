@@ -11,12 +11,7 @@
 !*.cpp
 !*.md
 !.gitignore
-!python/objects/teapot.obj/vertices
-!python/objects/teapot.obj/faces
-!python/objects/cube.obj/vertices
-!python/objects/cube.obj/faces
-!python/objects/bunny.obj/vertices
-!python/objects/bunny.obj/faces
+!python/objects/*/*
 
 # ignore
 js/node_modules
