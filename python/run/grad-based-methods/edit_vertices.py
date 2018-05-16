@@ -26,7 +26,7 @@ def main():
 
         # vertices_batch = nmr.vertices.rotate_x(vertices_batch, 90)
         # vertices_batch = nmr.vertices.rotate_y(vertices_batch, 30)
-        # vertices_batch = nmr.vertices.rotate_z(vertices_batch, 10)
+        vertices_batch = nmr.vertices.rotate_z(vertices_batch, 10)
         for loop in range(10000):
             # 回転
 
@@ -59,7 +59,7 @@ def main():
             #################
             target_silhouette = np.zeros_like(
                 object_silhouette_batch, dtype=np.float32)
-            target_silhouette[:, 20:200, 100:200] = 255
+            target_silhouette[:, 80:120, 140:160] = 255
             grad_vertices_batch = np.zeros_like(
                 vertices_batch, dtype=np.float32)
             object_silhouette_batch = np.copy((1.0 - depth_map) * 255).astype(
