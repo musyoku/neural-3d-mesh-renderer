@@ -7,7 +7,8 @@ import neural_mesh_renderer as nmr
 
 def main():
     # オブジェクトの読み込み
-    vertices, faces = nmr.objects.load("../../objects/triangle.obj")
+    vertices, faces = nmr.objects.load("../../objects/polyhedron.obj")
+    vertices *= 0.1
 
     # ミニバッチ化
     vertices_batch = vertices[None, ...]
@@ -24,8 +25,8 @@ def main():
                                          np.ascontiguousarray(faces_batch[0]),
                                          silhouette_size)
 
-        # vertices_batch = nmr.vertices.rotate_x(vertices_batch, 90)
-        # vertices_batch = nmr.vertices.rotate_y(vertices_batch, 30)
+        vertices_batch = nmr.vertices.rotate_x(vertices_batch, -30)
+        vertices_batch = nmr.vertices.rotate_y(vertices_batch, -90)
         vertices_batch = nmr.vertices.rotate_z(vertices_batch, 10)
         for loop in range(10000):
             # 回転
@@ -37,6 +38,7 @@ def main():
             # 透視投影
             perspective_vertices_batch = nmr.vertices.project_perspective(
                 perspective_vertices_batch, viewing_angle=45, z_max=5, z_min=0)
+
 
             #################
             face_vertices_batch = nmr.vertices.convert_to_face_representation(
@@ -59,7 +61,7 @@ def main():
             #################
             target_silhouette = np.zeros_like(
                 object_silhouette_batch, dtype=np.float32)
-            target_silhouette[:, 70:120, 130:180] = 255
+            target_silhouette[:, 30:225, 30:225] = 255
             grad_vertices_batch = np.zeros_like(
                 vertices_batch, dtype=np.float32)
             object_silhouette_batch = np.copy((1.0 - depth_map) * 255).astype(

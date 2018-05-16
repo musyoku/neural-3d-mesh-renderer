@@ -184,7 +184,7 @@ void compute_grad_y(
                                 float delta_pj = grad_silhouette[target_batch_index * image_width * image_height + yi_s * image_width + xi_p];
                                 float grad = (delta_pj * delta_ij >= 0) ? 0 : delta_pj * delta_ij / moving_distance / 255.0f;
                                 grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_a * 3 + 1] += grad;
-                                // debug_grad_map[map_index_s] += grad * delta_pj;
+                                debug_grad_map[map_index_s] += grad;
                             }
                         }
                     }
@@ -196,7 +196,7 @@ void compute_grad_y(
                                 float delta_pj = grad_silhouette[target_batch_index * image_width * image_height + yi_s * image_width + xi_p];
                                 float grad = (delta_pj * delta_ij >= 0) ? 0 : delta_pj * delta_ij / moving_distance / 255.0f;
                                 grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_b * 3 + 1] += grad;
-                                // debug_grad_map[map_index_s] += grad * delta_pj;
+                                debug_grad_map[map_index_s] += grad;
                             }
                         }
                     }
@@ -234,7 +234,7 @@ void compute_grad_y(
                                 float delta_pj = grad_silhouette[target_batch_index * image_width * image_height + yi_s * image_width + xi_p];
                                 float grad = (delta_pj * delta_ij >= 0) ? 0 : -delta_pj * delta_ij / moving_distance / 255.0f;
                                 grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_a * 3 + 1] += grad;
-                                // debug_grad_map[map_index_s] += grad;
+                                debug_grad_map[map_index_s] += grad;
                             }
                         }
                         // 頂点Bについて
@@ -247,7 +247,7 @@ void compute_grad_y(
                                 float delta_pj = grad_silhouette[target_batch_index * image_width * image_height + yi_s * image_width + xi_p];
                                 float grad = (delta_pj * delta_ij >= 0) ? 0 : -delta_pj * delta_ij / moving_distance / 255.0f;
                                 grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_b * 3 + 1] += grad;
-                                // debug_grad_map[map_index_s] += grad;
+                                debug_grad_map[map_index_s] += grad;
                             }
                         }
                     }
@@ -266,7 +266,7 @@ void compute_grad_y(
                                 float delta_pj = grad_silhouette[target_batch_index * image_width * image_height + yi_s * image_width + xi_p];
                                 float grad = (delta_pj * delta_ij >= 0) ? 0 : delta_pj * delta_ij / moving_distance / 255.0f;
                                 grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_a * 3 + 1] += grad;
-                                // debug_grad_map[map_index_s] += grad;
+                                debug_grad_map[map_index_s] += grad;
                             }
                         }
                         // 頂点Bについて
@@ -279,7 +279,7 @@ void compute_grad_y(
                                 float delta_pj = grad_silhouette[target_batch_index * image_width * image_height + yi_s * image_width + xi_p];
                                 float grad = (delta_pj * delta_ij >= 0) ? 0 : delta_pj * delta_ij / moving_distance / 255.0f;
                                 grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_b * 3 + 1] += grad;
-                                // debug_grad_map[map_index_s] += grad;
+                                debug_grad_map[map_index_s] += grad;
                             }
                         }
                     }
@@ -314,7 +314,7 @@ void compute_grad_y(
                                 float delta_pj = grad_silhouette[target_batch_index * image_width * image_height + yi_s * image_width + xi_p];
                                 float grad = (delta_pj * delta_ij >= 0) ? 0 : -delta_pj * delta_ij / moving_distance / 255.0f;
                                 grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_b * 3 + 1] += grad;
-                                // debug_grad_map[map_index_s] += grad * delta_pj;
+                                debug_grad_map[map_index_s] += grad;
                             }
                         }
                     }
@@ -326,7 +326,7 @@ void compute_grad_y(
                                 float delta_pj = grad_silhouette[target_batch_index * image_width * image_height + yi_s * image_width + xi_p];
                                 float grad = (delta_pj * delta_ij >= 0) ? 0 : -delta_pj * delta_ij / moving_distance / 255.0f;
                                 grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_a * 3 + 1] += grad;
-                                // debug_grad_map[map_index_s] += grad * delta_pj;
+                                debug_grad_map[map_index_s] += grad;
                             }
                         }
                     }
@@ -365,7 +365,7 @@ void compute_grad_y(
                                 float delta_pj = grad_silhouette[target_batch_index * image_width * image_height + yi_s * image_width + xi_p];
                                 float grad = (delta_pj * delta_ij >= 0) ? 0 : -delta_pj * delta_ij / moving_distance / 255.0f;
                                 grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_a * 3 + 1] += grad;
-                                // debug_grad_map[map_index_s] += grad;
+                                debug_grad_map[map_index_s] += grad;
                             }
                         }
                         // 頂点Bについて
@@ -378,7 +378,7 @@ void compute_grad_y(
                                 float delta_pj = grad_silhouette[target_batch_index * image_width * image_height + yi_s * image_width + xi_p];
                                 float grad = (delta_pj * delta_ij >= 0) ? 0 : -delta_pj * delta_ij / moving_distance / 255.0f;
                                 grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_b * 3 + 1] += grad;
-                                // debug_grad_map[map_index_s] += grad;
+                                debug_grad_map[map_index_s] += grad;
                             }
                         }
                     }
@@ -395,7 +395,7 @@ void compute_grad_y(
                                 float delta_pj = grad_silhouette[target_batch_index * image_width * image_height + yi_s * image_width + xi_p];
                                 float grad = (delta_pj * delta_ij >= 0) ? 0 : delta_pj * delta_ij / moving_distance / 255.0f;
                                 grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_a * 3 + 1] += grad;
-                                // debug_grad_map[map_index_s] += grad;
+                                debug_grad_map[map_index_s] += grad;
                             }
                         }
                         // 頂点Bについて
@@ -408,7 +408,7 @@ void compute_grad_y(
                                 float delta_pj = grad_silhouette[target_batch_index * image_width * image_height + yi_s * image_width + xi_p];
                                 float grad = (delta_pj * delta_ij >= 0) ? 0 : delta_pj * delta_ij / moving_distance / 255.0f;
                                 grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_b * 3 + 1] += grad;
-                                // debug_grad_map[map_index_s] += grad;
+                                debug_grad_map[map_index_s] += grad;
                             }
                         }
                     }
@@ -475,7 +475,7 @@ void compute_grad_x(
             // まずスキャンライン上で辺に当たる画素を探す
             int si_x_start = 0;
             int si_x_end = image_width - 1; // 実際にはここに到達する前に辺に当たるはず
-            int xi_s_edge = si_x_start;
+            int si_x_edge = si_x_start;
             // 外側の全ての画素から勾配を求める
             {
                 int pixel_value_inside = 0;
@@ -483,12 +483,12 @@ void compute_grad_x(
                     int map_index = target_batch_index * image_width * image_height + yi_p * image_width + si_x;
                     int face_index = face_index_map[map_index];
                     if (face_index == target_face_index) {
-                        xi_s_edge = si_x;
+                        si_x_edge = si_x;
                         pixel_value_inside = pixel_map[map_index];
                         break;
                     }
                 }
-                for (int si_x = si_x_start; si_x < xi_s_edge; si_x++) {
+                for (int si_x = si_x_start; si_x < si_x_edge; si_x++) {
                     int map_index_s = target_batch_index * image_width * image_height + yi_p * image_width + si_x;
                     int pixel_value_outside = pixel_map[map_index_s];
                     // 走査点と面の輝度値の差
@@ -498,36 +498,36 @@ void compute_grad_x(
                     // 相似な三角形なのでy方向の比率から求まる
                     // 頂点Aについて
                     if (yi_p_end - yi_p > 0) {
-                        float moving_distance = (xi_s_edge - si_x) / (float)(yi_p_end - yi_p) * (float)(yi_p_end - yi_p_start);
+                        float moving_distance = (si_x_edge - si_x) / (float)(yi_p_end - yi_p) * (float)(yi_p_end - yi_p_start);
                         if (moving_distance > 0) {
                             float delta_pj = grad_silhouette[target_batch_index * image_width * image_height + yi_p * image_width + si_x];
                             // 左側は勾配が逆向きになる
                             float grad = (delta_pj * delta_ij >= 0) ? 0 : -delta_pj * delta_ij / moving_distance / 255.0f;
                             grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_a * 3] += grad;
-                            // debug_grad_map[map_index_s] += grad * delta_pj;
+                            debug_grad_map[map_index_s] += grad;
                         }
                     }
                     // 頂点Bについて
                     if (yi_p - yi_p_start > 0) {
-                        float moving_distance = (xi_s_edge - si_x) / (float)(yi_p - yi_p_start) * (float)(yi_p_end - yi_p_start);
+                        float moving_distance = (si_x_edge - si_x) / (float)(yi_p - yi_p_start) * (float)(yi_p_end - yi_p_start);
                         if (moving_distance > 0) {
                             float delta_pj = grad_silhouette[target_batch_index * image_width * image_height + yi_p * image_width + si_x];
                             // 左側は勾配が逆向きになる
                             float grad = (delta_pj * delta_ij >= 0) ? 0 : -delta_pj * delta_ij / moving_distance / 255.0f;
                             grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_b * 3] += grad;
-                            // debug_grad_map[map_index_s] += grad * delta_pj;
+                            debug_grad_map[map_index_s] += grad;
                         }
                     }
                 }
             }
             // 内側の全ての画素から勾配を求める
             {
-                int map_index_outside = target_batch_index * image_width * image_height + yi_p * image_width + xi_s_edge - 1;
+                int map_index_outside = target_batch_index * image_width * image_height + yi_p * image_width + si_x_edge - 1;
                 int pixel_value_outside = pixel_map[map_index_outside];
                 int si_x_other_edge = image_width - 1;
                 int pixel_value_other_outside = 0;
                 // 反対側の辺の位置を特定する
-                for (int si_x = xi_s_edge + 1; si_x <= si_x_end; si_x++) {
+                for (int si_x = si_x_edge + 1; si_x <= si_x_end; si_x++) {
                     int map_index = target_batch_index * image_width * image_height + yi_p * image_width + si_x;
                     int face_index = face_index_map[map_index];
                     if (face_index != target_face_index) {
@@ -536,7 +536,7 @@ void compute_grad_x(
                         break;
                     }
                 }
-                for (int si_x = xi_s_edge; si_x <= si_x_other_edge; si_x++) {
+                for (int si_x = si_x_edge; si_x <= si_x_other_edge; si_x++) {
                     int map_index_s = target_batch_index * image_width * image_height + yi_p * image_width + si_x;
                     int pixel_value_inside = pixel_map[map_index_s];
                     // 面の左側（頂点を右に動かしていって辺に当たる場合）
@@ -548,12 +548,12 @@ void compute_grad_x(
                         // スキャンライン上の移動距離ではない
                         // 相似な三角形なのでy方向の比率から求まる
                         if (yi_p - yi_p_start > 0) {
-                            float moving_distance = (si_x - xi_s_edge) / (float)(yi_p - yi_p_start) * (float)(yi_p_end - yi_p_start);
+                            float moving_distance = (si_x - si_x_edge) / (float)(yi_p - yi_p_start) * (float)(yi_p_end - yi_p_start);
                             if (moving_distance > 0) {
                                 float delta_pj = grad_silhouette[target_batch_index * image_width * image_height + yi_p * image_width + si_x];
                                 float grad = (delta_pj * delta_ij >= 0) ? 0 : delta_pj * delta_ij / moving_distance / 255.0f;
                                 grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_a * 3] += grad;
-                                // debug_grad_map[map_index_s] += grad;
+                                debug_grad_map[map_index_s] += grad;
                             }
                         }
                         // 頂点Bについて
@@ -561,12 +561,12 @@ void compute_grad_x(
                         // スキャンライン上の移動距離ではない
                         // 相似な三角形なのでy方向の比率から求まる
                         if (yi_p_end - yi_p > 0) {
-                            float moving_distance = (si_x - xi_s_edge) / (float)(yi_p_end - yi_p) * (float)(yi_p_end - yi_p_start);
+                            float moving_distance = (si_x - si_x_edge) / (float)(yi_p_end - yi_p) * (float)(yi_p_end - yi_p_start);
                             if (moving_distance > 0) {
                                 float delta_pj = grad_silhouette[target_batch_index * image_width * image_height + yi_p * image_width + si_x];
                                 float grad = (delta_pj * delta_ij >= 0) ? 0 : delta_pj * delta_ij / moving_distance / 255.0f;
                                 grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_b * 3] += grad;
-                                // debug_grad_map[map_index_s] += grad;
+                                debug_grad_map[map_index_s] += grad;
                             }
                         }
                     }
@@ -586,7 +586,7 @@ void compute_grad_x(
                                 float delta_pj = grad_silhouette[target_batch_index * image_width * image_height + yi_p * image_width + si_x];
                                 float grad = (delta_pj * delta_ij >= 0) ? 0 : -delta_pj * delta_ij / moving_distance / 255.0f;
                                 grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_a * 3] += grad;
-                                // debug_grad_map[map_index_s] += grad;
+                                debug_grad_map[map_index_s] += grad;
                             }
                         }
                         // 頂点Bについて
@@ -599,7 +599,7 @@ void compute_grad_x(
                                 float delta_pj = grad_silhouette[target_batch_index * image_width * image_height + yi_p * image_width + si_x];
                                 float grad = (delta_pj * delta_ij >= 0) ? 0 : -delta_pj * delta_ij / moving_distance / 255.0f;
                                 grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_b * 3] += grad;
-                                // debug_grad_map[map_index_s] += grad;
+                                debug_grad_map[map_index_s] += grad;
                             }
                         }
                     }
@@ -608,7 +608,7 @@ void compute_grad_x(
         } else {
             int si_x_start = image_width - 1;
             int si_x_end = 0;
-            int xi_s_edge = si_x_start;
+            int si_x_edge = si_x_start;
             // 外側の全ての画素から勾配を求める
             {
                 int pixel_value_inside = 0;
@@ -616,46 +616,48 @@ void compute_grad_x(
                     int map_index_s = target_batch_index * image_width * image_height + yi_p * image_width + si_x;
                     int face_index = face_index_map[map_index_s];
                     if (face_index == target_face_index) {
-                        xi_s_edge = si_x;
+                        si_x_edge = si_x;
                         pixel_value_inside = pixel_map[map_index_s];
                         break;
                     }
                 }
-                for (int si_x = si_x_start; si_x > xi_s_edge; si_x--) {
-                    int map_index_s = target_batch_index * image_width * image_height + yi_p * image_width + si_x;
-                    int pixel_value_outside = pixel_map[map_index_s];
-                    float delta_ij = pixel_value_inside - pixel_value_outside;
+                if (si_x_edge < si_x_start) {
+                    for (int si_x = si_x_start; si_x > si_x_edge; si_x--) {
+                        int map_index_s = target_batch_index * image_width * image_height + yi_p * image_width + si_x;
+                        int pixel_value_outside = pixel_map[map_index_s];
+                        float delta_ij = pixel_value_inside - pixel_value_outside;
 
-                    // 頂点Aについて
-                    if (yi_p_end - yi_p > 0) {
-                        float moving_distance = (si_x - xi_s_edge) * (float)(yi_p_end - yi_p) / (float)(yi_p_end - yi_p_start);
-                        if (moving_distance > 0) {
-                            float delta_pj = grad_silhouette[target_batch_index * image_width * image_height + yi_p * image_width + si_x];
-                            float grad = (delta_pj * delta_ij >= 0) ? 0 : delta_pj * delta_ij / moving_distance / 255.0f;
-                            grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_a * 3] += grad;
-                            // debug_grad_map[map_index_s] += grad * delta_pj;
+                        // 頂点Aについて
+                        if (yi_p - yi_p_start > 0) {
+                            float moving_distance = (si_x - si_x_edge) / (float)(yi_p - yi_p_start) * (float)(yi_p_end - yi_p_start);
+                            if (moving_distance > 0) {
+                                float delta_pj = grad_silhouette[target_batch_index * image_width * image_height + yi_p * image_width + si_x];
+                                float grad = (delta_pj * delta_ij >= 0) ? 0 : delta_pj * delta_ij / moving_distance / 255.0f;
+                                grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_a * 3] += grad;
+                                debug_grad_map[map_index_s] += grad;
+                            }
                         }
-                    }
-                    // 頂点Bについて
-                    if (yi_p - yi_p_start > 0) {
-                        float moving_distance = (si_x - xi_s_edge) * (float)(yi_p - yi_p_start) / (float)(yi_p_end - yi_p_start);
-                        if (moving_distance > 0) {
-                            float delta_pj = grad_silhouette[target_batch_index * image_width * image_height + yi_p * image_width + si_x];
-                            float grad = (delta_pj * delta_ij >= 0) ? 0 : delta_pj * delta_ij / moving_distance / 255.0f;
-                            grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_b * 3] += grad;
-                            // debug_grad_map[map_index_s] += grad * delta_pj;
+                        // 頂点Bについて
+                        if (yi_p_end - yi_p > 0) {
+                            float moving_distance = (si_x - si_x_edge) / (float)(yi_p_end - yi_p) * (float)(yi_p_end - yi_p_start);
+                            if (moving_distance > 0) {
+                                float delta_pj = grad_silhouette[target_batch_index * image_width * image_height + yi_p * image_width + si_x];
+                                float grad = (delta_pj * delta_ij >= 0) ? 0 : delta_pj * delta_ij / moving_distance / 255.0f;
+                                grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_b * 3] += grad;
+                                debug_grad_map[map_index_s] += grad;
+                            }
                         }
                     }
                 }
             }
             // 内側の全ての画素から勾配を求める
             {
-                int map_index_outside = target_batch_index * image_width * image_height + yi_p * image_width + xi_s_edge + 1;
+                int map_index_outside = target_batch_index * image_width * image_height + yi_p * image_width + si_x_edge + 1;
                 int pixel_value_outside = pixel_map[map_index_outside];
                 int si_x_other_edge = 0;
                 int pixel_value_other_outside = 0;
                 // 反対側の辺の位置を特定する
-                for (int si_x = xi_s_edge - 1; si_x >= si_x_end; si_x--) {
+                for (int si_x = si_x_edge - 1; si_x >= si_x_end; si_x--) {
                     int map_index = target_batch_index * image_width * image_height + yi_p * image_width + si_x;
                     int face_index = face_index_map[map_index];
                     if (face_index != target_face_index) {
@@ -664,7 +666,7 @@ void compute_grad_x(
                         break;
                     }
                 }
-                for (int si_x = xi_s_edge; si_x >= si_x_other_edge; si_x--) {
+                for (int si_x = si_x_edge; si_x >= si_x_other_edge; si_x--) {
                     int map_index_s = target_batch_index * image_width * image_height + yi_p * image_width + si_x;
                     int pixel_value_inside = pixel_map[map_index_s];
                     // 面の左側（頂点を右に動かしていって走査点が辺に当たる場合）
@@ -682,7 +684,7 @@ void compute_grad_x(
                                 float delta_pj = grad_silhouette[target_batch_index * image_width * image_height + yi_p * image_width + si_x];
                                 float grad = (delta_pj * delta_ij >= 0) ? 0 : delta_pj * delta_ij / moving_distance / 255.0f;
                                 grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_a * 3] += grad;
-                                // debug_grad_map[map_index_s] += grad;
+                                debug_grad_map[map_index_s] += grad;
                             }
                         }
                         // 頂点Bについて
@@ -695,7 +697,7 @@ void compute_grad_x(
                                 float delta_pj = grad_silhouette[target_batch_index * image_width * image_height + yi_p * image_width + si_x];
                                 float grad = (delta_pj * delta_ij >= 0) ? 0 : delta_pj * delta_ij / moving_distance / 255.0f;
                                 grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_b * 3] += grad;
-                                // debug_grad_map[map_index_s] += grad;
+                                debug_grad_map[map_index_s] += grad;
                             }
                         }
                     }
@@ -709,12 +711,12 @@ void compute_grad_x(
                             // 頂点の実際の移動量を求める
                             // スキャンライン上の移動距離ではない
                             // 相似な三角形なのでy方向の比率から求まる
-                            float moving_distance = (xi_s_edge - si_x) / (float)(yi_p - yi_p_start) * (float)(yi_p_end - yi_p_start);
+                            float moving_distance = (si_x_edge - si_x) / (float)(yi_p - yi_p_start) * (float)(yi_p_end - yi_p_start);
                             if (moving_distance > 0) {
                                 float delta_pj = grad_silhouette[target_batch_index * image_width * image_height + yi_p * image_width + si_x];
                                 float grad = (delta_pj * delta_ij >= 0) ? 0 : -delta_pj * delta_ij / moving_distance / 255.0f;
                                 grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_a * 3] += grad;
-                                // debug_grad_map[map_index_s] += grad;
+                                debug_grad_map[map_index_s] += grad;
                             }
                         }
                         // 頂点Bについて
@@ -722,12 +724,12 @@ void compute_grad_x(
                             // 頂点の実際の移動量を求める
                             // スキャンライン上の移動距離ではない
                             // 相似な三角形なのでy方向の比率から求まる
-                            float moving_distance = (xi_s_edge - si_x) / (float)(yi_p_end - yi_p) * (float)(yi_p_end - yi_p_start);
+                            float moving_distance = (si_x_edge - si_x) / (float)(yi_p_end - yi_p) * (float)(yi_p_end - yi_p_start);
                             if (moving_distance > 0) {
                                 float delta_pj = grad_silhouette[target_batch_index * image_width * image_height + yi_p * image_width + si_x];
                                 float grad = (delta_pj * delta_ij >= 0) ? 0 : -delta_pj * delta_ij / moving_distance / 255.0f;
                                 grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_b * 3] += grad;
-                                // debug_grad_map[map_index_s] += grad;
+                                debug_grad_map[map_index_s] += grad;
                             }
                         }
                     }
