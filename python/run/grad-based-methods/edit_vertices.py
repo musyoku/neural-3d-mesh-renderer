@@ -59,7 +59,7 @@ def main():
             #################
             target_silhouette = np.zeros_like(
                 object_silhouette_batch, dtype=np.float32)
-            target_silhouette[:, 80:120, 140:160] = 255
+            target_silhouette[:, 70:120, 130:180] = 255
             grad_vertices_batch = np.zeros_like(
                 vertices_batch, dtype=np.float32)
             object_silhouette_batch = np.copy((1.0 - depth_map) * 255).astype(
