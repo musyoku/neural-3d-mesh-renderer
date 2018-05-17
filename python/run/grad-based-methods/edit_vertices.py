@@ -7,8 +7,7 @@ import neural_mesh_renderer as nmr
 
 def main():
     # オブジェクトの読み込み
-    vertices, faces = nmr.objects.load("../../objects/polyhedron.obj")
-    vertices *= 0.1
+    vertices, faces = nmr.objects.load("../../objects/bunny.obj")
 
     # ミニバッチ化
     vertices_batch = vertices[None, ...]
@@ -64,7 +63,7 @@ def main():
             target_silhouette[:, 30:225, 30:225] = 255
             grad_vertices_batch = np.zeros_like(
                 vertices_batch, dtype=np.float32)
-            object_silhouette_batch = np.copy((1.0 - depth_map) * 255).astype(
+            object_silhouette_batch = np.copy((1.0 - depth_map) * 255, order="c").astype(
                 np.int32)
             object_silhouette_batch[object_silhouette_batch > 0] = 255
             grad_silhouette_batch = -((

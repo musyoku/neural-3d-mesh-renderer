@@ -55,8 +55,8 @@ app.prepare().then(() => {
     server.post("/silhouette/init_silhouette_area", (req, res) => {
         pack(req, res, enums.event.init_silhouette_area, broadcast)
     })
-    server.get("/silhouette", (req, res) => {
-        return app.render(req, res, "/silhouette", {})
+    server.get("/", (req, res) => {
+        return app.render(req, res, "/", {})
     })
     server.get("*", (req, res) => {
         return handle(req, res)

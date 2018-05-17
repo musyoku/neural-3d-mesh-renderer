@@ -28,8 +28,6 @@ cdef extern from "src/rasterize.h":
         int image_height);
 
 
-@cython.boundscheck(False)
-@cython.wraparound(False)
 def forward_face_index_map(
         np.ndarray[float, ndim=4, mode="c"] face_vertices not None, 
         np.ndarray[int, ndim=3, mode="c"] face_index_map not None,
@@ -54,8 +52,6 @@ def forward_face_index_map(
         image_width,
         image_height)
 
-@cython.boundscheck(False)
-@cython.wraparound(False)
 def backward_silhouette(
         np.ndarray[int, ndim=3, mode="c"] faces not None,
         np.ndarray[float, ndim=4, mode="c"] face_vertices not None, 

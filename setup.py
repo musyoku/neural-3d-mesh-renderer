@@ -18,7 +18,6 @@ setup(
             language="c++",
             include_dirs=[numpy.get_include()],
         ),
-        gdb_debug=True,
         build_dir="build"),
     cmdclass={"build_ext": build_ext},
 )
