@@ -7,7 +7,7 @@ import neural_mesh_renderer as nmr
 
 def main():
     # オブジェクトの読み込み
-    vertices, faces = nmr.objects.load("../../objects/bunny.obj")
+    vertices, faces = nmr.objects.load("../../objects/teapot.obj")
 
     # ミニバッチ化
     vertices_batch = vertices[None, ...]
@@ -25,7 +25,7 @@ def main():
                                          silhouette_size)
 
         vertices_batch = nmr.vertices.rotate_x(vertices_batch, -30)
-        vertices_batch = nmr.vertices.rotate_y(vertices_batch, -90)
+        vertices_batch = nmr.vertices.rotate_y(vertices_batch, -40)
         vertices_batch = nmr.vertices.rotate_z(vertices_batch, 10)
         for loop in range(10000):
             # 回転
@@ -37,7 +37,6 @@ def main():
             # 透視投影
             perspective_vertices_batch = nmr.vertices.project_perspective(
                 perspective_vertices_batch, viewing_angle=45, z_max=5, z_min=0)
-
 
             #################
             face_vertices_batch = nmr.vertices.convert_to_face_representation(
@@ -58,17 +57,17 @@ def main():
             #################
 
             #################
-            target_silhouette = np.zeros_like(
+            target_silhouette_batch = np.zeros_like(
                 object_silhouette_batch, dtype=np.float32)
-            target_silhouette[:, 30:225, 30:225] = 255
+            target_silhouette_batch[:, 30:225, 30:225] = 255
             grad_vertices_batch = np.zeros_like(
                 vertices_batch, dtype=np.float32)
-            object_silhouette_batch = np.copy((1.0 - depth_map) * 255, order="c").astype(
-                np.int32)
+            object_silhouette_batch = np.copy(
+                (1.0 - depth_map) * 255, order="c").astype(np.int32)
             object_silhouette_batch[object_silhouette_batch > 0] = 255
-            grad_silhouette_batch = -((
-                target_silhouette - object_silhouette_batch) / 255).astype(
-                    np.float32)
+            grad_silhouette_batch = -(
+                (target_silhouette_batch - object_silhouette_batch) /
+                255).astype(np.float32)
 
             debug_grad_map = np.zeros_like(
                 object_silhouette_batch, dtype=np.float32)
@@ -87,8 +86,11 @@ def main():
             grad_image[grad_image < 0] = 64
             #################
 
-            browser.update_top_silhouette(np.uint8(grad_image))
-            browser.update_bottom_silhouette(np.uint8(debug_grad_map[0]))
+            browser.update_top_left_image(np.uint8(grad_image))
+            browser.update_bottom_left_image(np.uint8(debug_grad_map[0]))
+            browser.update_top_right_image(depth_map_image)
+            browser.update_bottom_right_image(
+                np.uint8(target_silhouette_batch[0]))
             browser.update_object(np.ascontiguousarray(vertices_batch[0]))
 
 

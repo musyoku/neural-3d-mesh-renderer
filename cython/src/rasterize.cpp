@@ -183,8 +183,8 @@ void compute_grad_y(
                             if (moving_distance > 0) {
                                 float delta_pj = grad_silhouette[target_batch_index * image_width * image_height + yi_s * image_width + xi_p];
                                 float grad = (delta_pj * delta_ij >= 0) ? 0 : delta_pj * delta_ij / moving_distance / 255.0f;
-                                // grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_a * 3 + 1] += grad;
-                                // debug_grad_map[map_index_s] += grad;
+                                grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_a * 3 + 1] += grad;
+                                debug_grad_map[map_index_s] += grad;
                             }
                         }
                     }
@@ -195,8 +195,8 @@ void compute_grad_y(
                             if (moving_distance > 0) {
                                 float delta_pj = grad_silhouette[target_batch_index * image_width * image_height + yi_s * image_width + xi_p];
                                 float grad = (delta_pj * delta_ij >= 0) ? 0 : delta_pj * delta_ij / moving_distance / 255.0f;
-                                // grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_b * 3 + 1] += grad;
-                                // debug_grad_map[map_index_s] += grad;
+                                grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_b * 3 + 1] += grad;
+                                debug_grad_map[map_index_s] += grad;
                             }
                         }
                     }
@@ -233,8 +233,8 @@ void compute_grad_y(
                             if (moving_distance > 0) {
                                 float delta_pj = grad_silhouette[target_batch_index * image_width * image_height + yi_s * image_width + xi_p];
                                 float grad = (delta_pj * delta_ij >= 0) ? 0 : -delta_pj * delta_ij / moving_distance / 255.0f;
-                                // grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_a * 3 + 1] += grad;
-                                // debug_grad_map[map_index_s] += grad;
+                                grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_a * 3 + 1] += grad;
+                                debug_grad_map[map_index_s] += grad;
                             }
                         }
                         // 頂点Bについて
@@ -246,8 +246,8 @@ void compute_grad_y(
                             if (moving_distance > 0) {
                                 float delta_pj = grad_silhouette[target_batch_index * image_width * image_height + yi_s * image_width + xi_p];
                                 float grad = (delta_pj * delta_ij >= 0) ? 0 : -delta_pj * delta_ij / moving_distance / 255.0f;
-                                // grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_b * 3 + 1] += grad;
-                                // debug_grad_map[map_index_s] += grad;
+                                grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_b * 3 + 1] += grad;
+                                debug_grad_map[map_index_s] += grad;
                             }
                         }
                     }
@@ -265,8 +265,8 @@ void compute_grad_y(
                             if (moving_distance > 0) {
                                 float delta_pj = grad_silhouette[target_batch_index * image_width * image_height + yi_s * image_width + xi_p];
                                 float grad = (delta_pj * delta_ij >= 0) ? 0 : delta_pj * delta_ij / moving_distance / 255.0f;
-                                // grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_a * 3 + 1] += grad;
-                                // debug_grad_map[map_index_s] += grad;
+                                grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_a * 3 + 1] += grad;
+                                debug_grad_map[map_index_s] += grad;
                             }
                         }
                         // 頂点Bについて
@@ -278,8 +278,8 @@ void compute_grad_y(
                             if (moving_distance > 0) {
                                 float delta_pj = grad_silhouette[target_batch_index * image_width * image_height + yi_s * image_width + xi_p];
                                 float grad = (delta_pj * delta_ij >= 0) ? 0 : delta_pj * delta_ij / moving_distance / 255.0f;
-                                // grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_b * 3 + 1] += grad;
-                                // debug_grad_map[map_index_s] += grad;
+                                grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_b * 3 + 1] += grad;
+                                debug_grad_map[map_index_s] += grad;
                             }
                         }
                     }
@@ -313,8 +313,8 @@ void compute_grad_y(
                             if (moving_distance > 0) {
                                 float delta_pj = grad_silhouette[target_batch_index * image_width * image_height + yi_s * image_width + xi_p];
                                 float grad = (delta_pj * delta_ij >= 0) ? 0 : -delta_pj * delta_ij / moving_distance / 255.0f;
-                                // grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_b * 3 + 1] += grad;
-                                // debug_grad_map[map_index_s] += grad;
+                                grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_b * 3 + 1] += grad;
+                                debug_grad_map[map_index_s] += grad;
                             }
                         }
                     }
@@ -325,8 +325,8 @@ void compute_grad_y(
                             if (moving_distance > 0) {
                                 float delta_pj = grad_silhouette[target_batch_index * image_width * image_height + yi_s * image_width + xi_p];
                                 float grad = (delta_pj * delta_ij >= 0) ? 0 : -delta_pj * delta_ij / moving_distance / 255.0f;
-                                // grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_a * 3 + 1] += grad;
-                                // debug_grad_map[map_index_s] += grad;
+                                grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_a * 3 + 1] += grad;
+                                debug_grad_map[map_index_s] += grad;
                             }
                         }
                     }
@@ -364,8 +364,8 @@ void compute_grad_y(
                             if (moving_distance > 0) {
                                 float delta_pj = grad_silhouette[target_batch_index * image_width * image_height + yi_s * image_width + xi_p];
                                 float grad = (delta_pj * delta_ij >= 0) ? 0 : -delta_pj * delta_ij / moving_distance / 255.0f;
-                                // grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_a * 3 + 1] += grad;
-                                // debug_grad_map[map_index_s] += grad;
+                                grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_a * 3 + 1] += grad;
+                                debug_grad_map[map_index_s] += grad;
                             }
                         }
                         // 頂点Bについて
@@ -377,8 +377,8 @@ void compute_grad_y(
                             if (moving_distance > 0) {
                                 float delta_pj = grad_silhouette[target_batch_index * image_width * image_height + yi_s * image_width + xi_p];
                                 float grad = (delta_pj * delta_ij >= 0) ? 0 : -delta_pj * delta_ij / moving_distance / 255.0f;
-                                // grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_b * 3 + 1] += grad;
-                                // debug_grad_map[map_index_s] += grad;
+                                grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_b * 3 + 1] += grad;
+                                debug_grad_map[map_index_s] += grad;
                             }
                         }
                     }
@@ -394,8 +394,8 @@ void compute_grad_y(
                             if (moving_distance > 0) {
                                 float delta_pj = grad_silhouette[target_batch_index * image_width * image_height + yi_s * image_width + xi_p];
                                 float grad = (delta_pj * delta_ij >= 0) ? 0 : delta_pj * delta_ij / moving_distance / 255.0f;
-                                // grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_a * 3 + 1] += grad;
-                                // debug_grad_map[map_index_s] += grad;
+                                grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_a * 3 + 1] += grad;
+                                debug_grad_map[map_index_s] += grad;
                             }
                         }
                         // 頂点Bについて
@@ -407,8 +407,8 @@ void compute_grad_y(
                             if (moving_distance > 0) {
                                 float delta_pj = grad_silhouette[target_batch_index * image_width * image_height + yi_s * image_width + xi_p];
                                 float grad = (delta_pj * delta_ij >= 0) ? 0 : delta_pj * delta_ij / moving_distance / 255.0f;
-                                // grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_b * 3 + 1] += grad;
-                                // debug_grad_map[map_index_s] += grad;
+                                grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_b * 3 + 1] += grad;
+                                debug_grad_map[map_index_s] += grad;
                             }
                         }
                     }
@@ -503,8 +503,8 @@ void compute_grad_x(
                             float delta_pj = grad_silhouette[target_batch_index * image_width * image_height + yi_p * image_width + si_x];
                             // 左側は勾配が逆向きになる
                             float grad = (delta_pj * delta_ij >= 0) ? 0 : -delta_pj * delta_ij / moving_distance / 255.0f;
-                            // grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_a * 3] += grad;
-                            // debug_grad_map[map_index_s] += grad;
+                            grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_a * 3] += grad;
+                            debug_grad_map[map_index_s] += grad;
                         }
                     }
                     // 頂点Bについて
@@ -514,8 +514,8 @@ void compute_grad_x(
                             float delta_pj = grad_silhouette[target_batch_index * image_width * image_height + yi_p * image_width + si_x];
                             // 左側は勾配が逆向きになる
                             float grad = (delta_pj * delta_ij >= 0) ? 0 : -delta_pj * delta_ij / moving_distance / 255.0f;
-                            // grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_b * 3] += grad;
-                            // debug_grad_map[map_index_s] += grad;
+                            grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_b * 3] += grad;
+                            debug_grad_map[map_index_s] += grad;
                         }
                     }
                 }
@@ -552,8 +552,8 @@ void compute_grad_x(
                             if (moving_distance > 0) {
                                 float delta_pj = grad_silhouette[target_batch_index * image_width * image_height + yi_p * image_width + si_x];
                                 float grad = (delta_pj * delta_ij >= 0) ? 0 : delta_pj * delta_ij / moving_distance / 255.0f;
-                                // grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_a * 3] += grad;
-                                // debug_grad_map[map_index_s] += grad;
+                                grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_a * 3] += grad;
+                                debug_grad_map[map_index_s] += grad;
                             }
                         }
                         // 頂点Bについて
@@ -565,8 +565,8 @@ void compute_grad_x(
                             if (moving_distance > 0) {
                                 float delta_pj = grad_silhouette[target_batch_index * image_width * image_height + yi_p * image_width + si_x];
                                 float grad = (delta_pj * delta_ij >= 0) ? 0 : delta_pj * delta_ij / moving_distance / 255.0f;
-                                // grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_b * 3] += grad;
-                                // debug_grad_map[map_index_s] += grad;
+                                grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_b * 3] += grad;
+                                debug_grad_map[map_index_s] += grad;
                             }
                         }
                     }
@@ -585,8 +585,8 @@ void compute_grad_x(
                             if (moving_distance > 0) {
                                 float delta_pj = grad_silhouette[target_batch_index * image_width * image_height + yi_p * image_width + si_x];
                                 float grad = (delta_pj * delta_ij >= 0) ? 0 : -delta_pj * delta_ij / moving_distance / 255.0f;
-                                // grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_a * 3] += grad;
-                                // debug_grad_map[map_index_s] += grad;
+                                grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_a * 3] += grad;
+                                debug_grad_map[map_index_s] += grad;
                             }
                         }
                         // 頂点Bについて
@@ -598,8 +598,8 @@ void compute_grad_x(
                             if (moving_distance > 0) {
                                 float delta_pj = grad_silhouette[target_batch_index * image_width * image_height + yi_p * image_width + si_x];
                                 float grad = (delta_pj * delta_ij >= 0) ? 0 : -delta_pj * delta_ij / moving_distance / 255.0f;
-                                // grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_b * 3] += grad;
-                                // debug_grad_map[map_index_s] += grad;
+                                grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_b * 3] += grad;
+                                debug_grad_map[map_index_s] += grad;
                             }
                         }
                     }
@@ -633,8 +633,8 @@ void compute_grad_x(
                             if (moving_distance > 0) {
                                 float delta_pj = grad_silhouette[target_batch_index * image_width * image_height + yi_p * image_width + si_x];
                                 float grad = (delta_pj * delta_ij >= 0) ? 0 : delta_pj * delta_ij / moving_distance / 255.0f;
-                                // grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_a * 3] += grad;
-                                // debug_grad_map[map_index_s] += grad;
+                                grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_a * 3] += grad;
+                                debug_grad_map[map_index_s] += grad;
                             }
                         }
                         // 頂点Bについて
@@ -643,8 +643,8 @@ void compute_grad_x(
                             if (moving_distance > 0) {
                                 float delta_pj = grad_silhouette[target_batch_index * image_width * image_height + yi_p * image_width + si_x];
                                 float grad = (delta_pj * delta_ij >= 0) ? 0 : delta_pj * delta_ij / moving_distance / 255.0f;
-                                // grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_b * 3] += grad;
-                                // debug_grad_map[map_index_s] += grad;
+                                grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_b * 3] += grad;
+                                debug_grad_map[map_index_s] += grad;
                             }
                         }
                     }
@@ -683,8 +683,8 @@ void compute_grad_x(
                             if (moving_distance > 0) {
                                 float delta_pj = grad_silhouette[target_batch_index * image_width * image_height + yi_p * image_width + si_x];
                                 float grad = (delta_pj * delta_ij >= 0) ? 0 : delta_pj * delta_ij / moving_distance / 255.0f;
-                                // grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_a * 3] += grad;
-                                // debug_grad_map[map_index_s] += grad;
+                                grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_a * 3] += grad;
+                                debug_grad_map[map_index_s] += grad;
                             }
                         }
                         // 頂点Bについて
@@ -696,8 +696,8 @@ void compute_grad_x(
                             if (moving_distance > 0) {
                                 float delta_pj = grad_silhouette[target_batch_index * image_width * image_height + yi_p * image_width + si_x];
                                 float grad = (delta_pj * delta_ij >= 0) ? 0 : delta_pj * delta_ij / moving_distance / 255.0f;
-                                // grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_b * 3] += grad;
-                                // debug_grad_map[map_index_s] += grad;
+                                grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_b * 3] += grad;
+                                debug_grad_map[map_index_s] += grad;
                             }
                         }
                     }
@@ -715,8 +715,8 @@ void compute_grad_x(
                             if (moving_distance > 0) {
                                 float delta_pj = grad_silhouette[target_batch_index * image_width * image_height + yi_p * image_width + si_x];
                                 float grad = (delta_pj * delta_ij >= 0) ? 0 : -delta_pj * delta_ij / moving_distance / 255.0f;
-                                // grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_a * 3] += grad;
-                                // debug_grad_map[map_index_s] += grad;
+                                grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_a * 3] += grad;
+                                debug_grad_map[map_index_s] += grad;
                             }
                         }
                         // 頂点Bについて
@@ -728,8 +728,8 @@ void compute_grad_x(
                             if (moving_distance > 0) {
                                 float delta_pj = grad_silhouette[target_batch_index * image_width * image_height + yi_p * image_width + si_x];
                                 float grad = (delta_pj * delta_ij >= 0) ? 0 : -delta_pj * delta_ij / moving_distance / 255.0f;
-                                // grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_b * 3] += grad;
-                                // debug_grad_map[map_index_s] += grad;
+                                grad_vertices[target_batch_index * num_vertices * 3 + vertex_index_b * 3] += grad;
+                                debug_grad_map[map_index_s] += grad;
                             }
                         }
                     }

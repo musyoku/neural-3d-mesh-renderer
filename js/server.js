@@ -40,20 +40,26 @@ const pack = (req, res, event_code, done) => {
 
 app.prepare().then(() => {
     const server = express()
-    server.post("/silhouette/init_object", (req, res) => {
+    server.post("/init_object", (req, res) => {
         pack(req, res, enums.event.init_object, broadcast)
     })
-    server.post("/silhouette/update_object", (req, res) => {
+    server.post("/update_object", (req, res) => {
         pack(req, res, enums.event.update_object, broadcast)
     })
-    server.post("/silhouette/update_top_silhouette", (req, res) => {
-        pack(req, res, enums.event.update_top_silhouette, broadcast)
+    server.post("/update_top_right_image", (req, res) => {
+        pack(req, res, enums.event.update_top_right_image, broadcast)
     })
-    server.post("/silhouette/update_bottom_silhouette", (req, res) => {
-        pack(req, res, enums.event.update_bottom_silhouette, broadcast)
+    server.post("/update_bottom_right_image", (req, res) => {
+        pack(req, res, enums.event.update_bottom_right_image, broadcast)
     })
-    server.post("/silhouette/init_silhouette_area", (req, res) => {
-        pack(req, res, enums.event.init_silhouette_area, broadcast)
+    server.post("/update_top_left_image", (req, res) => {
+        pack(req, res, enums.event.update_top_left_image, broadcast)
+    })
+    server.post("/update_bottom_left_image", (req, res) => {
+        pack(req, res, enums.event.update_bottom_left_image, broadcast)
+    })
+    server.post("/init_image_area", (req, res) => {
+        pack(req, res, enums.event.init_image_area, broadcast)
     })
     server.get("/", (req, res) => {
         return app.render(req, res, "/", {})

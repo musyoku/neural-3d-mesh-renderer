@@ -10,15 +10,11 @@ export default class App extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            "top_silhouette": {
+            "image": {
                 "width": 128,
                 "height": 128,
             },
-            "top_silhouette": {
-                "width": 128,
-                "height": 128,
-            },
-            "silhouette_area_width": 0
+            "image_area_width": 0
         }
     }
     initScene = (vertices, faces) => {
@@ -170,7 +166,7 @@ export default class App extends Component {
         }
         this.updateVertices(vertices)
     }
-    onInitSilhouetteArea = (buffer) => {
+    onInitImageArea = (buffer) => {
         let offset = 0
         const event_code = buffer.readInt8(offset)
         offset += 1
@@ -179,7 +175,7 @@ export default class App extends Component {
         const height = buffer.readInt32LE(offset)
         offset += 4
         this.setState({
-            "top_silhouette": {
+            "image": {
                 width, height
             }
         })
@@ -221,6 +217,12 @@ export default class App extends Component {
     onUpdateBottomRightImage = (buffer) => {
         this.updateImage(buffer, this.refs.bottom_right_canvas)
     }
+    onUpdateTopLeftImage = (buffer) => {
+        this.updateImage(buffer, this.refs.top_left_canvas)
+    }
+    onUpdateBottomLeftImage = (buffer) => {
+        this.updateImage(buffer, this.refs.bottom_left_canvas)
+    }
     componentDidMount = () => {
         this.ws = new WebSocketClient("localhost", 8081)
         this.ws.addEventListener("message", (event) => {
@@ -236,24 +238,30 @@ export default class App extends Component {
                 if (event_code === enums.event.update_object) {
                     this.onUpdateObject(buffer)
                 }
-                if (event_code === enums.event.update_top_silhouette) {
+                if (event_code === enums.event.update_top_right_image) {
                     this.onUpdateTopRightImage(buffer)
                 }
-                if (event_code === enums.event.update_bottom_silhouette) {
+                if (event_code === enums.event.update_bottom_right_image) {
                     this.onUpdateBottomRightImage(buffer)
                 }
-                if (event_code === enums.event.init_silhouette_area) {
-                    this.onInitSilhouetteArea(buffer)
+                if (event_code === enums.event.update_top_left_image) {
+                    this.onUpdateTopLeftImage(buffer)
+                }
+                if (event_code === enums.event.update_bottom_left_image) {
+                    this.onUpdateBottomLeftImage(buffer)
+                }
+                if (event_code === enums.event.init_image_area) {
+                    this.onInitImageArea(buffer)
                 }
             })
         })
-        const silhouette_area_width = window.innerHeight / 3.0
+        const image_area_width = window.innerHeight / 3.0
         this.setState({
-            silhouette_area_width
+            image_area_width
         })
     }
     render() {
-        const silhouette_style = { "width": this.state.silhouette_area_width, "height": this.state.silhouette_area_width }
+        const image_style = { "width": this.state.image_area_width, "height": this.state.image_area_width }
         return (
             <div className="app">
                 <style jsx global>{`
@@ -272,12 +280,12 @@ export default class App extends Component {
                     .renderer {
                         flex: 1 1 auto;
                     }
-                    .silhouette_area {
+                    .image_area {
                         flex: 0 0 auto;
                         display: flex;
                         flex-direction: column;
                     }
-                    .silhouette_area > .silhouette {
+                    .image_area > .image {
                         flex: 1 1 auto;
                         display: flex;
                         flex-direction: column;
@@ -286,27 +294,27 @@ export default class App extends Component {
                         align-items: center;
                         border: none;
                     }
-                    .silhouette_area > .silhouette > .canvas{
+                    .image_area > .image > .canvas{
                         flex: 0 0 auto;
                         width: 100%;
                         height: auto;
                     }
                     `}</style>
-                <div className="silhouette_area" style={{ "width": this.state.silhouette_area_width }}>
-                    <div className="silhouette" style={silhouette_style}>
-                        <canvas className="canvas" ref="top_left_canvas" width={this.state.top_silhouette.width} height={this.state.top_silhouette.height} />
+                <div className="image_area" style={{ "width": this.state.image_area_width }}>
+                    <div className="image" style={image_style}>
+                        <canvas className="canvas" ref="top_left_canvas" width={this.state.image.width} height={this.state.image.height} />
                     </div>
-                    <div className="silhouette" style={silhouette_style}>
-                        <canvas className="canvas" ref="bottom_left_canvas" width={this.state.top_silhouette.width} height={this.state.top_silhouette.height} />
+                    <div className="image" style={image_style}>
+                        <canvas className="canvas" ref="bottom_left_canvas" width={this.state.image.width} height={this.state.image.height} />
                     </div>
                 </div>
                 <div className="renderer" ref="renderer" />
-                <div className="silhouette_area" style={{ "width": this.state.silhouette_area_width }}>
-                    <div className="silhouette" style={silhouette_style}>
-                        <canvas className="canvas" ref="top_right_canvas" width={this.state.top_silhouette.width} height={this.state.top_silhouette.height} />
+                <div className="image_area" style={{ "width": this.state.image_area_width }}>
+                    <div className="image" style={image_style}>
+                        <canvas className="canvas" ref="top_right_canvas" width={this.state.image.width} height={this.state.image.height} />
                     </div>
-                    <div className="silhouette" style={silhouette_style}>
-                        <canvas className="canvas" ref="bottom_right_canvas" width={this.state.top_silhouette.width} height={this.state.top_silhouette.height} />
+                    <div className="image" style={image_style}>
+                        <canvas className="canvas" ref="bottom_right_canvas" width={this.state.image.width} height={this.state.image.height} />
                     </div>
                 </div>
             </div>
