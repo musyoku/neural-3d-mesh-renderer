@@ -153,22 +153,27 @@ void compute_grad_y(
         // ここではスキャンラインと呼ぶことにする
         if (scan_direction == top_to_bottom) {
             // まずスキャンライン上で辺に当たる画素を探す
-            int si_y_start = 0;
-            int si_y_end = image_height - 1; // 実際にはここに到達する前に辺に当たるはず
-            int yi_s_edge = si_y_start;
+            int yi_s_start = 0;
+            int yi_s_end = image_height - 1; // 実際にはここに到達する前に辺に当たるはず
+            int yi_s_edge = yi_s_start;
+            bool edge_found = false;
             // 外側の全ての画素から勾配を求める
             {
                 int pixel_value_inside = 0;
-                for (int yi_s = si_y_start; yi_s <= si_y_end; yi_s++) {
+                for (int yi_s = yi_s_start; yi_s <= yi_s_end; yi_s++) {
                     int map_index = target_batch_index * image_width * image_height + yi_s * image_width + xi_p;
                     int face_index = face_index_map[map_index];
                     if (face_index == target_face_index) {
                         yi_s_edge = yi_s;
                         pixel_value_inside = pixel_map[map_index];
+                        edge_found = true;
                         break;
                     }
                 }
-                for (int yi_s = si_y_start; yi_s < yi_s_edge; yi_s++) {
+                if (edge_found == false) {
+                    continue;
+                }
+                for (int yi_s = yi_s_start; yi_s < yi_s_edge; yi_s++) {
                     int map_index_s = target_batch_index * image_width * image_height + yi_s * image_width + xi_p;
                     int pixel_value_outside = pixel_map[map_index_s];
                     // 走査点と面の輝度値の差
@@ -209,7 +214,7 @@ void compute_grad_y(
                 int si_y_other_edge = image_height - 1;
                 int pixel_value_other_outside = 0;
                 // 反対側の辺の位置を特定する
-                for (int yi_s = yi_s_edge + 1; yi_s <= si_y_end; yi_s++) {
+                for (int yi_s = yi_s_edge + 1; yi_s <= yi_s_end; yi_s++) {
                     int map_index = target_batch_index * image_width * image_height + yi_s * image_width + xi_p;
                     int face_index = face_index_map[map_index];
                     if (face_index != target_face_index) {
@@ -286,22 +291,27 @@ void compute_grad_y(
                 }
             }
         } else {
-            int si_y_start = image_height - 1;
-            int si_y_end = 0;
-            int yi_s_edge = si_y_start;
+            int yi_s_start = image_height - 1;
+            int yi_s_end = 0;
+            int yi_s_edge = yi_s_start;
+            bool edge_found = false;
             // 外側の全ての画素から勾配を求める
             {
                 int pixel_value_inside = 0;
-                for (int yi_s = si_y_start; yi_s >= si_y_end; yi_s--) {
+                for (int yi_s = yi_s_start; yi_s >= yi_s_end; yi_s--) {
                     int map_index = target_batch_index * image_width * image_height + yi_s * image_width + xi_p;
                     int face_index = face_index_map[map_index];
                     if (face_index == target_face_index) {
                         yi_s_edge = yi_s;
                         pixel_value_inside = pixel_map[map_index];
+                        edge_found = true;
                         break;
                     }
                 }
-                for (int yi_s = si_y_start; yi_s > yi_s_edge; yi_s--) {
+                if (edge_found == false) {
+                    continue;
+                }
+                for (int yi_s = yi_s_start; yi_s > yi_s_edge; yi_s--) {
                     int map_index_s = target_batch_index * image_width * image_height + yi_s * image_width + xi_p;
                     int pixel_value_outside = pixel_map[map_index_s];
                     float delta_ij = pixel_value_inside - pixel_value_outside;
@@ -339,7 +349,7 @@ void compute_grad_y(
                 int yi_s_other_edge = 0;
                 int pixel_value_other_outside = 0;
                 // 反対側の辺の位置を特定する
-                for (int yi_s = yi_s_edge - 1; yi_s >= si_y_end; yi_s--) {
+                for (int yi_s = yi_s_edge - 1; yi_s >= yi_s_end; yi_s--) {
                     int map_index = target_batch_index * image_width * image_height + yi_s * image_width + xi_p;
                     int face_index = face_index_map[map_index];
                     if (face_index != target_face_index) {

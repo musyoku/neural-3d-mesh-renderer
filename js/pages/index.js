@@ -294,6 +294,10 @@ export default class App extends Component {
                         align-items: center;
                         border: none;
                     }
+                    .image_area > .image > .label {
+                        font-size: 20px;
+                        color: white;
+                    }
                     .image_area > .image > .canvas{
                         flex: 0 0 auto;
                         width: 100%;
@@ -302,18 +306,22 @@ export default class App extends Component {
                     `}</style>
                 <div className="image_area" style={{ "width": this.state.image_area_width }}>
                     <div className="image" style={image_style}>
+                        <span className="label">Sign of loss</span>
                         <canvas className="canvas" ref="top_left_canvas" width={this.state.image.width} height={this.state.image.height} />
                     </div>
                     <div className="image" style={image_style}>
+                        <span className="label">Gradient</span>
                         <canvas className="canvas" ref="bottom_left_canvas" width={this.state.image.width} height={this.state.image.height} />
                     </div>
                 </div>
                 <div className="renderer" ref="renderer" />
                 <div className="image_area" style={{ "width": this.state.image_area_width }}>
                     <div className="image" style={image_style}>
+                        <span className="label">Depth map</span>
                         <canvas className="canvas" ref="top_right_canvas" width={this.state.image.width} height={this.state.image.height} />
                     </div>
                     <div className="image" style={image_style}>
+                        <span className="label">Ground-truth</span>
                         <canvas className="canvas" ref="bottom_right_canvas" width={this.state.image.width} height={this.state.image.height} />
                     </div>
                 </div>

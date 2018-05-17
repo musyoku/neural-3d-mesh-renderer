@@ -86,6 +86,17 @@ def main():
             grad_image[grad_image < 0] = 64
             #################
 
+            # print(faces_batch.size)
+            # print(face_vertices_batch.size)
+            # print(perspective_vertices_batch.size)
+
+            # print(face_index_map_batch.size)
+            # print(object_silhouette_batch.size)
+
+            # print(grad_vertices_batch.size)
+            # print(grad_silhouette_batch.size)
+            # print(debug_grad_map.size)
+
             browser.update_top_left_image(np.uint8(grad_image))
             browser.update_bottom_left_image(np.uint8(debug_grad_map[0]))
             browser.update_top_right_image(depth_map_image)
